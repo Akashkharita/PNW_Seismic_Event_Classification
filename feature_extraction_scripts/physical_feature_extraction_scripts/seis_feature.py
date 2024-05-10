@@ -135,7 +135,7 @@ class FeatureCalculator:
                 
                 self.feature_functions['E_' + str(low) + '_' + str(high)] = lambda: 0
                 self.feature_functions['Kurto_' + str(low) + '_' + str(high)] = lambda: 0
-                print(f"Error in freq band {low}-{high}: {e}")
+                #print(f"Error in freq band {low}-{high}: {e}")
 
     def compute_envelope(self, data):
         analytic_signal = signal.hilbert(data)
@@ -627,3 +627,4 @@ def compute_features(slide_id, df_good, feature_type = 'physics based', envfilte
 
                 
     return Features
+"""
