@@ -143,7 +143,7 @@ data_eq1 = []
 
 
 for i in tqdm(range(50000, 100000)):
-     data_eq1.append(f['/data/'+buck_eq[i]][ind_eq[si], 2, :])
+     data_eq1.append(f['/data/'+buck_eq[i]][ind_eq[i], 2, :])
         
 data_eq1 = np.array(data_eq1)
 
