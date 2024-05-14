@@ -63,7 +63,7 @@ ind_su = np.array(indices)[np.where(source == 'surface event')[0]]
 
 data_su = []
 for i in tqdm(range(len(buck_su))):
-     data_su.append(f['/data/'+buck_su[i]][ind_su[i], 2, :])
+     data_su.append(f['/data/'+buck_su[i]][ind_su[i], 2, 2000:17000])
         
         
 data_su = np.array(data_su)
@@ -75,7 +75,7 @@ ind_th = np.array(indices)[np.where(source == 'thunder')[0]]
 
 data_th = []
 for i in tqdm(range(len(buck_th))):
-     data_th.append(f['/data/'+buck_th[i]][ind_th[i], 2, :])
+     data_th.append(f['/data/'+buck_th[i]][ind_th[i], 2, 2000:17000])
         
         
 data_th = np.array(data_th)
@@ -86,7 +86,7 @@ ind_sb = np.array(indices)[np.where(source == 'sonic boom')[0]]
 
 data_sb = []
 for i in tqdm(range(len(buck_sb))):
-     data_sb.append(f['/data/'+buck_sb[i]][ind_sb[i], 2, :])
+     data_sb.append(f['/data/'+buck_sb[i]][ind_sb[i], 2, 2000:17000])
         
         
 data_sb = np.array(data_sb) 
