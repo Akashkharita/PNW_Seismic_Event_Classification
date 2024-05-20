@@ -35,7 +35,7 @@ import tsfel
 import random
 import calendar
 import concurrent.futures
-
+import seaborn as sns
 
 # We need to change the path to import the seis feature library. 
 
@@ -105,5 +105,114 @@ def butterworth_filter(arrays, lowcut = 1, highcut = 10, fs = 100, num_corners =
 
               
     
+
+trace_cm_phy_tsf_man = []
+annot_kws = {"fontsize": 15}
+
+
+def plot_confusion_matrix(cf = trace_cm_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface']):
+
+
+    labels = ['Precision', 'Recall', 'F1-Score']
+   
+    plt.figure(figsize = [8,6])
+
+    # Set annotation font size within each block
+    
+    ax = sns.heatmap(cf, annot=True, cmap='Blues', fmt='d', xticklabels = class_labels, yticklabels = class_labels, annot_kws=annot_kws)
+
+
+    # Set tick label font size
+    ax.set_xticklabels(class_labels, fontsize=15)
+    ax.set_yticklabels(class_labels, fontsize=15)
+
+
+    plt.xlabel('Predicted', fontsize = 15)
+    plt.ylabel('Actual', fontsize = 15)
+    #plt.title('Total samples: '+str(len(y_pred)), fontsize = 20)
+    plt.tight_layout()
+
+
     
     
+trace_report_phy_tsf_man = []
+
+def plot_classification_report(cr = trace_report_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface']): 
+
+
+    labels = ['Precision', 'Recall', 'F1-Score']
+    #class_labels = ['Earthquake', 'Explosion','Noise','Surface']
+    # Set a pleasing style
+    sns.set_style("whitegrid")
+
+    # Create a figure and axes for the heatmap
+    plt.figure(figsize = [8,6])
+    ax = sns.heatmap(pd.DataFrame(cr).iloc[:3, :len(class_labels)], annot=True, cmap='Blues', yticklabels = labels, xticklabels=class_labels, vmin=0.8, vmax=1, annot_kws=annot_kws)
+
+    # Set labels and title
+    # Set tick label font size
+    ax.set_xticklabels(class_labels, fontsize=15)
+    ax.set_yticklabels(labels, fontsize=15)
+
+    ax.set_xlabel('Metrics', fontsize=15)
+    ax.set_ylabel('Classes', fontsize=15)
+    ax.set_title('Classification Report', fontsize=18)
+
+    # Create a colorbar
+    #cbar = ax.collections[0].colorbar
+    #cbar.set_ticks([0.5, 1])  # Set custom tick locations
+    #cbar.set_ticklabels(['0', '0.5', '1'])  # Set custom tick labels
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
+    
+    
+    
+from math import radians, sin, cos, sqrt, atan2
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    # Convert latitude and longitude from degrees to radians
+    lat1 = radians(lat1)
+    lon1 = radians(lon1)
+    lat2 = radians(lat2)
+    lon2 = radians(lon2)
+    
+    # Radius of the Earth in kilometers
+    R = 6371.0
+    
+    # Calculate the difference in latitude and longitude
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    
+    # Calculate the distance using the Haversine formula
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    
+    # Distance in kilometers
+    distance = R * c
+    
+    return distance
+    
+
+    
+## Some helpful functions in plotting 
+def interquartile(df):
+
+    # Set the lower and upper quantile thresholds (25% and 75%)
+    lower_quantile = 0.10
+    upper_quantile = 0.90
+
+    # Filter the DataFrame based on the quantile range for all columns
+    filtered_df = df[
+        (df >= df.quantile(lower_quantile)) &
+        (df <= df.quantile(upper_quantile))
+    ]
+
+    # Drop rows with any NaN values (if needed)
+    #filtered_df = filtered_df.dropna(axis = 1)
+
+    return filtered_df
+
