@@ -69,7 +69,8 @@ jupyter notebook
 
 
 ## Usage
-The [notebook](notebooks/ML_Classification_Workflow_for_SCOPED) shows an example of how to detect surface events through continuous seismograms and visualize the results with detailed documentation. I showed the entire process by using three examples of verified surface events (one example each of avalanche, fall and flows). The users are free to run the model on the timing and stations of their choice. 
+The [notebook](notebooks/ML_Classification_Workflow_for_Scoped.ipynb) shows an example of how to process, train and tune the machine learning model and evaluate the results. I also show the importance of including manual parameters in improving the classification performance, in addition to this, I show that this process can also be used to identify potentially mislabeled events. 
+
 
 
 ## Contributing
