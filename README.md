@@ -27,12 +27,11 @@ chmod +x Miniconda3-latest-Linux-x86_64.sh
 ./Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
 ./miniconda/bin/conda init bash
 bash
-sudo yum groupinstall -y "Development Tools"
 ```
 
 And then we are going to run - 
 ```
-sudo yum groupinstall "Development Tools"
+sudo yum groupinstall -y "Development Tools"
 ```
 
 
