@@ -38,7 +38,7 @@ sudo yum groupinstall -y "Development Tools"
 Following instructions can be followed on your local system as well as on the cloud (after following the instructions above)
 
 
-First we will clone the repository by going to the terminal and typing
+Then we will clone the github repository and  install the required dependencies
 
 ```
 git clone https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git
@@ -49,50 +49,7 @@ pip install -r requirements.txt -y
 pip install jupyter
 conda install -y ipykernel
 python -m ipykernel install --user --name=surface
-jupyter notebook --ip 0.0.0.0 --allow-root
 ```
-
-
-Then we will enter the repository by
-
-```
-cd Surface_Event_Detection
-```
-
-
-Second, let's setup a conda environment using the following command. 
-
-```
-conda create -n surface python=3.9.5
-```
-
-Activate the environment
-
-```
-
-conda activate surface
-```
-
-Then we will install the required dependencies 
-```
-pip install -r requirements.txt
-```
-Then we will install the jupyter notebook by running 
-
-```
-pip install jupyter
-```
-
-
-
-Then we will add the conda environment to jupyter hub 
-```
-conda install ipykernel
-```
-```
-python -m ipykernel install --user --name=surface
-```
-
 
 Now we are all set to go! 😃
 
