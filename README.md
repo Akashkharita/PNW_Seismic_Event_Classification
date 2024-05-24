@@ -45,7 +45,7 @@ git clone https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git
 cd PNW_Seismic_Event_Classification
 conda create -y -n surface python=3.9.5
 conda activate surface
-pip install -r requirements.txt -y
+pip install -r requirements.txt
 pip install jupyter
 conda install -y ipykernel
 python -m ipykernel install --user --name=surface
