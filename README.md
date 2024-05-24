@@ -47,7 +47,7 @@ Following instructions can be followed on your local system as well as on the cl
 First we will clone the repository by going to the terminal and typing
 
 ```
-git clone https://github.com/Akashkharita/Surface_Event_Detection.git
+git clone https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git
 cd Surface_Event_Detection
 conda create -y -n surface python=3.9.5
 conda activate surface
