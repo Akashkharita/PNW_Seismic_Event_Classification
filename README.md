@@ -48,7 +48,7 @@ First we will clone the repository by going to the terminal and typing
 
 ```
 git clone https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git
-cd Surface_Event_Detection
+cd PNW_Seismic_Event_Classification
 conda create -y -n surface python=3.9.5
 conda activate surface
 pip install -r requirements.txt
