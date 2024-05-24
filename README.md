@@ -4,7 +4,10 @@
 - [License](#license)
 
 
-# Surface Event Detection
+# Seismic Event Classification in Pacific Northwest
+
+This repository demonstrates the steps towards automated seismic event classification in the Pacific Northwest. We train a supervised machine learning model on the dataset acquired in the pacific northwest. This dataset has four classes - (i) Earthquakes, (ii) Explosions, (iii) Noise and Surface Events. 
+
 
 This repository contains notebooks that show how to use my trained ML model to detect surface events (Avalanches/Rockfalls/Debris Flows) through continuous seismograms from multiple stations. 
 The model was trained on over 200k seismic events in the Pacific northwest. [Ni et al. 2023](https://seismica.library.mcgill.ca/article/view/368/868). 
