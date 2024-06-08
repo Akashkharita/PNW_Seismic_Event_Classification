@@ -1,3 +1,56 @@
+import numpy as np
+import pandas as pd
+from glob import glob 
+from tqdm import tqdm
+import seaborn as sns 
+
+# for converting the text file containing the quarry locations into csv file
+import csv
+
+# for computing the geographical distance between two points 
+import math
+
+
+from sklearn.model_selection import train_test_split
+from imblearn.under_sampling import RandomUnderSampler
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, auc, classification_report, confusion_matrix
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_val_score
+from datetime import datetime
+import h5py
+from sklearn.preprocessing import LabelEncoder
+from scipy import stats, signal
+from sklearn.preprocessing import StandardScaler
+import obspy
+from obspy.geodetics.base import gps2dist_azimuth, gps2dist_azimuth
+from obspy.clients.fdsn import Client
+import time
+pd.set_option('display.max_columns', None)
+from joblib import dump, load
+from obspy.signal.filter import envelope
+import tsfel
+
+
+import sys
+sys.path.append('../feature_extraction_scripts/physical_feature_extraction_scripts')
+import seis_feature
+#from seis_feature import compute_physical_features
+from tsfel import time_series_features_extractor, get_features_by_domain
+from datetime import timedelta
+import os
+import sys
+sys.path.append('../common_scripts')
+
+from common_processing_functions import apply_cosine_taper
+from common_processing_functions import butterworth_filter
+
+import pickle
+from zenodo_get import zenodo_get
+
+from multiprocessing import Pool, cpu_count
+from scipy.signal import resample
+
 from scipy import signal
 import scipy
 import numpy as np
@@ -9,7 +62,6 @@ from scipy.fft import fft, fftfreq
 import numpy as np
 from scipy.signal import hilbert
 from sklearn import metrics
-
 
 
 
