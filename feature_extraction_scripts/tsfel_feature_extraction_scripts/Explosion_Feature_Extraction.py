@@ -31,6 +31,14 @@ warnings.filterwarnings("ignore")
 # displaying all columns from pandas dataframe
 pd.set_option('display.max_columns', None)
 
+
+
+
+## Example usage 
+## python script_name.py --low 0.5 --high 20 --new_sr 100 --start_time 5 --end_time 25 --taper_amount 5 --original_sr 200 --num_corners 3 
+
+
+
 # Argument parser
 parser = argparse.ArgumentParser(description="Seismic Event Classification Script")
 parser.add_argument("--low", type=float, default=1, help="Low pass frequency of the bandpass filter")
