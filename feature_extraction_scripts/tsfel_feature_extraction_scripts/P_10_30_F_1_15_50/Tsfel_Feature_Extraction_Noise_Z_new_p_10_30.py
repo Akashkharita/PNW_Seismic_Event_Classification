@@ -26,7 +26,6 @@ from scipy.signal import resample
 
 
 
-
 #%config InlineBackend.figure_format = "png"
 
 #from Feature_Extraction import compute_hibert
@@ -43,63 +42,25 @@ pd.set_option('display.max_columns', None)
 import time
 
 
-        
-              
-              
 
               
-exotic_file_name = "/data/whd01/yiyu_data/PNWML/exotic_waveforms.hdf5"
-exotic_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/exotic_metadata.csv")
-f = h5py.File(exotic_file_name, 'r')
+noise_file_name = "/data/whd01/yiyu_data/PNWML/noise_waveforms.hdf5"          
+noise_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/noise_metadata.csv")
+f = h5py.File(noise_file_name, 'r')          
+buckets = [noise_csv_file['trace_name'].values[i].split('$')[0] for i in range(len(noise_csv_file))]
+indices = [int(noise_csv_file['trace_name'].values[i].split('$')[1].split(',')[0]) for i in range(len(noise_csv_file))]
+buck_no = np.array(buckets)
+ind_no = np.array(indices)
 
-buckets = [exotic_csv_file['trace_name'].values[i].split('$')[0] for i in range(len(exotic_csv_file))]
-indices = [int(exotic_csv_file['trace_name'].values[i].split('$')[1].split(',')[0]) for i in range(len(exotic_csv_file))]
+data_no = []
 
-source = exotic_csv_file['source_type'].values
-
-
-buck_su = np.array(buckets)[np.where(source == 'surface event')[0]]
-ind_su = np.array(indices)[np.where(source == 'surface event')[0]]
-
-data_su = []
-for i in tqdm(range(len(buck_su))):
-     data_su.append(f['/data/'+buck_su[i]][ind_su[i], 2, 6000:10000])
-        
-        
-data_su = np.array(data_su)
-
-
-
-buck_th = np.array(buckets)[np.where(source == 'thunder')[0]]
-ind_th = np.array(indices)[np.where(source == 'thunder')[0]]
-
-data_th = []
-for i in tqdm(range(len(buck_th))):
-     data_th.append(f['/data/'+buck_th[i]][ind_th[i], 2, 6000:10000])
-        
-        
-data_th = np.array(data_th)
-
-
-buck_sb = np.array(buckets)[np.where(source == 'sonic boom')[0]]
-ind_sb = np.array(indices)[np.where(source == 'sonic boom')[0]]
-
-data_sb = []
-for i in tqdm(range(len(buck_sb))):
-     data_sb.append(f['/data/'+buck_sb[i]][ind_sb[i], 2, 6000:10000])
-        
-        
-data_sb = np.array(data_sb) 
+for i in tqdm(range(len(buck_no))):
+     data_no.append(f['/data/'+buck_no[i]][ind_no[i], 2, 4000:8000])
               
-  
-              
-              
-       
-            
+data_no = np.array(data_no) 
         
    
-import numpy as np
-
+              
 def resample_array(arr, original_rate, desired_rate):
     num_samples = len(arr)
     duration = num_samples / original_rate  # Duration of the array in seconds
@@ -107,8 +68,8 @@ def resample_array(arr, original_rate, desired_rate):
     return resample(arr, new_num_samples)
 
 
-
-
+              
+              
 def apply_cosine_taper(arrays, taper_percent=10):
     tapered_arrays = []
     
@@ -129,11 +90,7 @@ def apply_cosine_taper(arrays, taper_percent=10):
         tapered_arrays.append(tapered_array)
     
     return np.array(tapered_arrays)
-
-
-              
-              
-              
+                
               
               
               
@@ -181,91 +138,50 @@ def butterworth_filter(arrays, lowcut, highcut, fs, num_corners, filter_type='ba
     return filtered_arrays
 
               
-              
-tapered_su = apply_cosine_taper(data_su, taper_percent = 10) 
-tapered_th = apply_cosine_taper(data_th, taper_percent = 10)  
-tapered_sb = apply_cosine_taper(data_sb, taper_percent = 10)  
+tapered_no = apply_cosine_taper(data_no, taper_percent = 10)          
+           
+filtered_no = np.array(butterworth_filter(tapered_no, 1, 15, 100, 4, 'bandpass'))       
 
-filtered_su = np.array(butterworth_filter(tapered_su, 1, 15, 100, 4, 'bandpass'))
-filtered_th = np.array(butterworth_filter(tapered_th, 1, 15, 100, 4, 'bandpass'))
-filtered_sb = np.array(butterworth_filter(tapered_sb, 1, 15, 100, 4, 'bandpass'))
-
-              
-
-
-su_Z = filtered_su
-th_Z = filtered_th
-sb_Z = filtered_sb
-
+no_Z = filtered_no
 
               
 # Normalizing the data.              
+no_Z = no_Z/np.max(abs(no_Z), axis = 1)[:, np.newaxis]
 
-su_Z = su_Z/np.max(abs(su_Z), axis = 1)[:, np.newaxis]
-th_Z = th_Z/np.max(abs(th_Z), axis = 1)[:, np.newaxis]
-sb_Z = sb_Z/np.max(abs(sb_Z), axis = 1)[:, np.newaxis]
 
-              
-    
+# resampling the data 
+no_Z = np.array([resample_array(arr, 100, 50) for arr in no_Z])
 
-# Resampling the data
-su_Z = np.array([resample_array(arr, 100, 50) for arr in su_Z])
-# Resampling the data
-th_Z = np.array([resample_array(arr, 100, 50) for arr in th_Z])
-# Resampling the data
-sb_Z = np.array([resample_array(arr, 100, 50) for arr in sb_Z])
+
 
 
 
 cfg_file = tsfel.get_features_by_domain()
 
-    
-    
-# Extract features for surface event
-features_su = pd.DataFrame([])
-for i in tqdm(range(len(su_Z))):
-    try:
-        df = time_series_features_extractor(cfg_file, su_Z[i], fs= 50, verbose = 0)
-        df['serial_no'] = i
-        features_su = pd.concat([features_su,df])
-    except:
-        pass
-    
-    
-# Extract features for thunder
-features_th = pd.DataFrame([])
-for i in tqdm(range(len(th_Z))):
-    
-    try:
-        df = time_series_features_extractor(cfg_file, th_Z[i], fs= 50, verbose = 0)
-        df['serial_no'] = i
-        features_th = pd.concat([features_th,df])
-    except:
-        pass
-    
+
     
 # Extract features for sonic boom
-features_sb = pd.DataFrame([])
-for i in tqdm(range(len(sb_Z))):
+features_no = pd.DataFrame([])
+for i in tqdm(range(len(no_Z))):
     try:
-        df = time_series_features_extractor(cfg_file, sb_Z[i], fs= 50, verbose = 0)
+        
+        df = time_series_features_extractor(cfg_file, no_Z[i], fs= 50, verbose = 0)
         df['serial_no'] = i
-        features_sb = pd.concat([features_sb,df])
+        features_no = pd.concat([features_no,df]) 
+        
     except:
         pass
-    
-
     
     
 
 
               
-X = pd.concat([ features_su, features_th, features_sb])
-y =  ['surface']*len(features_su)+['thunder']*len(features_th)+['sonic']*len(features_sb)
+X = features_no
+y = ['noise']*len(features_no)
 X['source'] = y
 
 
-X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/P_10_30_F_1_15_50/tsfel_features_exotic_10_30.csv')
+X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/P_10_30_F_1_15_50/tsfel_features_noise_10_30.csv')
 
 
               

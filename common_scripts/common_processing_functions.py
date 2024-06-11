@@ -36,8 +36,21 @@ import random
 import calendar
 import concurrent.futures
 import seaborn as sns
+from scipy.signal import resample
+
+
+
 
 # We need to change the path to import the seis feature library. 
+
+
+
+def resample_array(arr, original_rate, desired_rate):
+    num_samples = len(arr)
+    duration = num_samples / original_rate  # Duration of the array in seconds
+    new_num_samples = int(duration * desired_rate)
+    return resample(arr, new_num_samples)
+
 
 
 
