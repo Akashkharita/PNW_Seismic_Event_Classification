@@ -40,10 +40,20 @@ from tsfel import time_series_features_extractor, get_features_by_domain
 from datetime import timedelta
 import os
 import sys
-sys.path.append('../common_scripts')
 
-from common_processing_functions import apply_cosine_taper
-from common_processing_functions import butterworth_filter
+
+# Get the absolute path of the directory two levels up
+two_levels_up = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+
+# Append the 'src' directory located two levels up to the system path
+sys.path.append(os.path.join(two_levels_up, 'src'))
+
+
+from utils import apply_cosine_taper
+from utils import butterworth_filter
+from utils import resample_array
+
+
 
 import pickle
 from zenodo_get import zenodo_get
