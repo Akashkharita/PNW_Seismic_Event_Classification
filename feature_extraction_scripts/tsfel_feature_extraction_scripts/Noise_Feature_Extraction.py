@@ -19,7 +19,6 @@ import warnings
 import time
 import argparse
 
-
 import sys
 import os
 
@@ -28,8 +27,6 @@ two_levels_up = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 # Append the 'src' directory located two levels up to the system path
 sys.path.append(os.path.join(two_levels_up, 'src'))
-
-
 
 from common_processing_functions import apply_cosine_taper
 from common_processing_functions import butterworth_filter
@@ -75,55 +72,51 @@ num_corners = args.num_corners
 
 
 
-comcat_file_name = "/data/whd01/yiyu_data/PNWML/comcat_waveforms.hdf5"
-comcat_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/comcat_metadata.csv")
-f = h5py.File(comcat_file_name, 'r')
-
-buckets = [comcat_csv_file['trace_name'].values[i].split('$')[0] for i in range(len(comcat_csv_file))]
-indices = [int(comcat_csv_file['trace_name'].values[i].split('$')[1].split(',')[0]) for i in range(len(comcat_csv_file))]
-source = comcat_csv_file['source_type'].values
-
-buck_exp = np.array(buckets)[np.where(source == 'explosion')[0]]
-ind_exp = np.array(indices)[np.where(source == 'explosion')[0]]
-
-data_exp = []
-for i in tqdm(range(len(buck_exp))):
-     data_exp.append(f['/data/'+buck_exp[i]][ind_exp[i], 2, int(5000 - start_time*100): int(5000+end_time*100)])
-               
-data_exp = np.array(data_exp)
 
 
 
+noise_file_name = "/data/whd01/yiyu_data/PNWML/noise_waveforms.hdf5"          
+noise_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/noise_metadata.csv")
+f = h5py.File(noise_file_name, 'r')          
+buckets = [noise_csv_file['trace_name'].values[i].split('$')[0] for i in range(len(noise_csv_file))]
+indices = [int(noise_csv_file['trace_name'].values[i].split('$')[1].split(',')[0]) for i in range(len(noise_csv_file))]
+buck_no = np.array(buckets)
+ind_no = np.array(indices)
 
-tapered_exp = apply_cosine_taper(data_exp, taper_percent = taper_amount)  
-## Mention the bandpass filter frequencies. 
-filtered_exp = np.array(butterworth_filter(data_exp, low, high, original_sr, num_corners, 'bandpass'))
+data_no = []
 
-exp_Z = filtered_exp         
-# Normalizing the data.              
-exp_Z = exp_Z/np.max(abs(exp_Z), axis = 1)[:, np.newaxis]
+for i in tqdm(range(len(buck_no))):
+     data_no.append(f['/data/'+buck_no[i]][ind_no[i], 2,  int(5000 - start_time*100): int(5000+end_time*100)])
+              
+data_no = np.array(data_no) 
+
+
+
+              
+tapered_no = apply_cosine_taper(data_no, taper_percent = taper_amount)                   
+filtered_no = np.array(butterworth_filter(tapered_no,low, high, original_sr, num_corners, 'bandpass'))       
+no_Z = filtered_no
+
 
 # Resampling the data
-exp_Z = np.array([resample_array(arr, original_sr, new_sr) for arr in exp_Z])
+no_Z = np.array([resample_array(arr, original_sr, new_sr) for arr in no_Z])
               
-    
-    
-    
-    
+# Normalizing the data.              
+no_Z = no_Z/np.max(abs(no_Z), axis = 1)[:, np.newaxis]
 
 
 cfg_file = tsfel.get_features_by_domain()
 
 
-# Extract features for explosion
-# Make sure to change the fs parameter to the modified sampling rate. 
-
-features_expz = pd.DataFrame([])
-for i in tqdm(range(len(exp_Z))):
+    
+# Extract features for sonic boom
+features_no = pd.DataFrame([])
+for i in tqdm(range(len(no_Z))):
     try:
-        df = time_series_features_extractor(cfg_file, exp_Z[i], fs= new_sr, verbose = 0)
+        
+        df = time_series_features_extractor(cfg_file, no_Z[i], fs = new_sr, verbose = 0)
         df['serial_no'] = i
-        features_expz = pd.concat([features_expz,df])
+        features_no = pd.concat([features_no,df]) 
         
     except:
         pass
@@ -132,9 +125,22 @@ for i in tqdm(range(len(exp_Z))):
 
 
               
-X = pd.concat([features_expz])
-y = ['explosion']*len(features_expz) 
+X = features_no
+y = ['noise']*len(features_no)
 X['source'] = y
 
 
-X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/tsfel_features_explosion_P_'+str(start_time)+'_'+str(end_time)+'_F_'+str(int(low))+'_'+str(int(high))+'_'+str(new_sr)+'.csv')
+
+
+X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/tsfel_features_noise_P_'+str(start_time)+'_'+str(end_time)+'_F_'+str(int(low))+'_'+str(int(high))+'_'+str(new_sr)+'.csv')
+
+
+
+
+
+
+
+
+
+
+
