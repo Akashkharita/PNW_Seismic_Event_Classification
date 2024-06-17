@@ -2,54 +2,20 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
-import obspy
-from obspy.signal.filter import envelope
-from obspy.clients.fdsn import Client
 from tqdm import tqdm
-from glob import glob
-import tsfel
-import random
-
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from collections import Counter
-from imblearn.under_sampling import RandomUnderSampler
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, auc, classification_report, confusion_matrix
-from sklearn.utils.multiclass import unique_labels
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from datetime import datetime
-
-from sklearn.decomposition import PCA
-import lightgbm as lgb
-from sklearn.model_selection import RepeatedKFold
-from sklearn.feature_selection import RFECV
-from sklearn.datasets import load_iris
-from sklearn.metrics import f1_score
-
-from scipy import stats
 from scipy import signal
-from sklearn.preprocessing import StandardScaler
-
-from obspy.geodetics.base import gps2dist_azimuth
-
-from datetime import timedelta
-import time
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset
-
 from scipy.signal import resample
+
+
 
 
 number_epochs = 100
@@ -60,77 +26,46 @@ criterion = nn.CrossEntropyLoss()
 
 
 
-
 def extract_waveforms(cat, file_name, start=7000, num_features=5000, before=5000, after=10000, number_samples=1000, num_channels=1, all_samples=False, shifting=True):
     
     """
     This is a function defined to extract the waveforms stored in the disk. 
-    
-    
-    
-    Inputs
-    
+    Inputs:
     cat -  Catalog containing metadata of the events, so we can extract the data using the bucket information
     file_name - path of the h5py file containing the data
     start - origin or first arrival time
-    
-    
     num_features - window length to extract
-    
-    
     before - number of samples to take before the arrival time
-    
     after - number of samples to take after the arrival time.
-    
-    
     num_samples - no. of events per class to extract
-    
-    
     num_channels - no. of channels per event to extract, if set 1, will extract Z component, if set any other number, will extract - ZNE component. 
-    
     all_samples - if true, will extract all the samples corresponding of a given class
-    
     shifting - if true, will extract windows randomly starting between P-5, P-20. The random numbers follow a gaussian distribution. 
-    
-    
-    
-    
-    Outputs
-    
-    
-    
-    
+    Outputs:
     
     """
     
     
     
     # This line initializes empty lists to store traces
-    st = []
-    
+    st = []    
     # This line initializes empty list to store corresponding event ids. 
-    event_ids = []
-    
+    event_ids = []    
     
     # This line opens an HDF5 file in read only mode, the with statement ensures that the file is properly
     # closed after the block of code is executed. 
     with h5py.File(file_name, 'r') as f:
-        cat_trace = cat['trace_name'].values
-        
+        cat_trace = cat['trace_name'].values        
         
         # If all_samples flag is true, it assigns the values equal to the length of cat_trace to number_samples
         if all_samples:
             number_samples = len(cat_trace)
-
             
         # Generates a list of random integers between 500 and 2000 (inclusive) if shifting flag is true, otherwise
         # it will generate a list of before equal to number_samples in the length. 
         
         # Note that the np.full function is defined to create a numpy array of specific shape and fill it with a constant value. 
         random_integer_list = np.random.randint(500, 2001, size=number_samples) if shifting else np.full(number_samples, before)
-
-        
-        # This list is going to iterate over number_samples. 
         
         # Note - so since we are taking the first number_samples from the dataset mainly for training,
         # it may include some temporal bias, in future. a to-do will be to randomize this extraction. 
@@ -169,8 +104,6 @@ def extract_waveforms(cat, file_name, start=7000, num_features=5000, before=5000
     return st, event_ids
 
 
-
-
               
 def apply_cosine_taper(arrays, taper_percent=10):
     """
@@ -205,10 +138,6 @@ def apply_cosine_taper(arrays, taper_percent=10):
     return np.array(tapered_arrays)
 
 
-
-
-
-
 def butterworth_filter(arrays, lowcut, highcut, fs, num_corners, filter_type='bandpass'):
     """
     Apply a Butterworth filter (bandpass, highpass, or lowpass) to each array in an array of arrays.
@@ -225,38 +154,35 @@ def butterworth_filter(arrays, lowcut, highcut, fs, num_corners, filter_type='ba
     Returns:
         numpy array: Filtered array with the same shape as the input.
     """
-    filtered_arrays = []
+    
+    # Normalize the frequency values to Nyquist frequency (0.5*fs)
+    lowcut_norm = lowcut / (0.5 * fs)
+    highcut_norm = highcut / (0.5 * fs)
 
+    # Design the Butterworth filter based on the filter type
+    if filter_type == 'bandpass':
+        b, a = signal.butter(num_corners, [lowcut_norm, highcut_norm], btype='band')
+    elif filter_type == 'highpass':
+        b, a = signal.butter(num_corners, lowcut_norm, btype='high')
+    elif filter_type == 'lowpass':
+        b, a = signal.butter(num_corners, highcut_norm, btype='low')
+    else:
+        raise ValueError("Invalid filter_type. Use 'bandpass', 'highpass', or 'lowpass'.")
+
+
+    filtered_arrays = []
     for data in arrays:
         filtered_channels = []
-
         # Iterate over channels
         for channel in data:
-            # Normalize the frequency values to Nyquist frequency (0.5*fs)
-            lowcut_norm = lowcut / (0.5 * fs)
-            highcut_norm = highcut / (0.5 * fs)
-
-            # Design the Butterworth filter based on the filter type
-            if filter_type == 'bandpass':
-                b, a = signal.butter(num_corners, [lowcut_norm, highcut_norm], btype='band')
-            elif filter_type == 'highpass':
-                b, a = signal.butter(num_corners, lowcut_norm, btype='high')
-            elif filter_type == 'lowpass':
-                b, a = signal.butter(num_corners, highcut_norm, btype='low')
-            else:
-                raise ValueError("Invalid filter_type. Use 'bandpass', 'highpass', or 'lowpass'.")
-
             # Apply the filter to the channel using lfilter
-            filtered_channel = signal.lfilter(b, a, channel)
+            filtered_channel = signal.filtfilt(b, a, channel)
             filtered_channels.append(filtered_channel)
-
         # Stack the filtered channels along the second dimension (axis 1)
         filtered_data = np.stack(filtered_channels)
         filtered_arrays.append(filtered_data)
 
     return np.array(filtered_arrays)
-
-
 
 
 
@@ -279,7 +205,7 @@ def normalize_arrays_by_max(arrays):
         # Iterate over channels
         for channel in data:
             # Normalize the channel by its maximum value
-            max_value = np.max(channel)
+            max_value = np.max(np.abs(channel))
             normalized_channel = channel / max_value
             normalized_channels.append(normalized_channel)
 
@@ -288,10 +214,6 @@ def normalize_arrays_by_max(arrays):
         normalized_arrays.append(normalized_data)
 
     return np.array(normalized_arrays)
-
-
-
-
 
 
 def retain_nonzero_arrays(arrays):
@@ -306,18 +228,10 @@ def retain_nonzero_arrays(arrays):
         numpy array: Normalized array with the same shape as the input.
     """
     nonzero_arrays = []
-
     for data in arrays:
-
         if np.sum(data[0] != 0):
-           nonzero_arrays.append(data)
-        
-        
-        
-
+           nonzero_arrays.append(data)     
     return np.array(nonzero_arrays)
-
-
 
 
 
@@ -327,9 +241,6 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     """
     This is a function to extract train, test and validation dataset in tensor format as required by Pytorch
     Here is a description of the parameters: - 
-    
-    
-    
     
     Parameters
     -----------
@@ -366,22 +277,14 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     
     train_dataloader: The dataloader is required when training the model, taking a batch of the samples at a given time. 
     
-    y_train: the training labels, 
-    
-    
+    y_train: the training labels,  
     
     test_dataset, test_dataloader, y_test: self explanatory, the size of test will be determined by the 4*test_size parameter. 
     
-    
-    
     val_dataset, val_dataloader, y_val: self explanatory, the size of validation set would be determined as 
-    
-    (total_samples - 4*train_size - 4*test_size)
+      (total_samples - 4*train_size - 4*test_size)
      
     """
-    
-    
-    
     
     
     
