@@ -28,9 +28,9 @@ two_levels_up = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 # Append the 'src' directory located two levels up to the system path
 sys.path.append(os.path.join(two_levels_up, 'src'))
 
-from common_processing_functions import apply_cosine_taper
-from common_processing_functions import butterworth_filter
-from common_processing_functions import resample_array
+from utils import apply_cosine_taper
+from utils import butterworth_filter
+from utils import resample_array
 
 # Ignore all warnings
 warnings.filterwarnings("ignore")
