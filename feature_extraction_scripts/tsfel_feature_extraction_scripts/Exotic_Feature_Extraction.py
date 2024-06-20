@@ -174,7 +174,8 @@ cfg_file = tsfel.get_features_by_domain()
 features_su = pd.DataFrame([])
 for i in tqdm(range(len(su_Z))):
     try:
-        df = seis_feature.FeatureCalculator(su_Z[i]).compute_features()
+        
+        df = time_series_features_extractor(cfg_file, su_Z[i], fs = new_sr, verbose = 0)
         df['serial_no'] = i
         features_su = pd.concat([features_su,df])
     except:
@@ -186,7 +187,7 @@ features_th = pd.DataFrame([])
 for i in tqdm(range(len(th_Z))):
     
     try:
-        df = seis_feature.FeatureCalculator(th_Z[i]).compute_features()
+        df = time_series_features_extractor(cfg_file, th_Z[i], fs = new_sr, verbose = 0)
         df['serial_no'] = i
         features_th = pd.concat([features_th,df])
     except:
@@ -197,7 +198,7 @@ for i in tqdm(range(len(th_Z))):
 features_sb = pd.DataFrame([])
 for i in tqdm(range(len(sb_Z))):
     try:
-        df = seis_feature.FeatureCalculator(sb_Z[i]).compute_features()
+        df = time_series_features_extractor(cfg_file, sb_Z[i], fs = new_sr, verbose = 0)
         df['serial_no'] = i
         features_sb = pd.concat([features_sb,df])
     except:
@@ -214,5 +215,5 @@ y =  ['surface']*len(features_su)+['thunder']*len(features_th)+['sonic']*len(fea
 X['source'] = y
 
 
-X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/physical_features_exotic_P_'+str(start_time)+'_'+str(end_time)+'_F_'+str(int(low))+'_'+str(int(high))+'_'+str(new_sr)+'.csv')
+X.to_csv('/home/ak287/PNW_Seismic_Event_Classification/extracted_features/tsfel_features_exotic_P_'+str(start_time)+'_'+str(end_time)+'_F_'+str(int(low))+'_'+str(int(high))+'_'+str(new_sr)+'.csv')
 

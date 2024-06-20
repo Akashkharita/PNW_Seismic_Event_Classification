@@ -32,9 +32,7 @@ from obspy.signal.filter import envelope
 import tsfel
 
 
-import sys
-sys.path.append('../feature_extraction_scripts/physical_feature_extraction_scripts')
-import seis_feature
+
 #from seis_feature import compute_physical_features
 from tsfel import time_series_features_extractor, get_features_by_domain
 from datetime import timedelta
@@ -43,15 +41,13 @@ import sys
 
 
 # Get the absolute path of the directory two levels up
-two_levels_up = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+#two_levels_up = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 # Append the 'src' directory located two levels up to the system path
-sys.path.append(os.path.join(two_levels_up, 'src'))
-
-
-from utils import apply_cosine_taper
-from utils import butterworth_filter
-from utils import resample_array
+#sys.path.append(os.path.join(two_levels_up, 'src'))
+#from utils import apply_cosine_taper
+#from utils import butterworth_filter
+#from utils import resample_array
 
 
 

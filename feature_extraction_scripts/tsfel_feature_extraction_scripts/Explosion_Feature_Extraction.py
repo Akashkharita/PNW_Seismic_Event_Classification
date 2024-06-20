@@ -31,9 +31,9 @@ sys.path.append(os.path.join(two_levels_up, 'src'))
 
 
 
-from common_processing_functions import apply_cosine_taper
-from common_processing_functions import butterworth_filter
-from common_processing_functions import resample_array
+from utils import apply_cosine_taper
+from utils import butterworth_filter
+from utils import resample_array
 
 # Ignore all warnings
 warnings.filterwarnings("ignore")
