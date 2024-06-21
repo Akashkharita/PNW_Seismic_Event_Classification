@@ -1,178 +1,9 @@
-import pandas as pd
-import numpy as np
-import scipy as sc
-from scipy import signal
-
-import matplotlib.pyplot as plt
-import h5py
-import obspy
-from obspy.signal.filter import envelope
-from obspy.clients.fdsn import Client
-from tqdm import tqdm
-from glob import glob
-import tsfel
-import random
-
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
-client = Client('IRIS')
-
-import os
-import pickle
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-from scatseisnet import ScatteringNetwork
-import matplotlib.dates as mdates
-
-
-import time
-
-from scipy.signal import butter, filtfilt
-from scipy.signal import butter, lfilter
-
-#%config InlineBackend.figure_format = "svg"
-
-#from Feature_Extraction import compute_hibert
-
-
-
-import numpy as np
-import pandas as pd
-from glob import glob 
-from tqdm import tqdm
-import seaborn as sns 
-
-from sklearn.model_selection import train_test_split
-from collections import Counter
-from imblearn.under_sampling import RandomUnderSampler
-import matplotlib.pyplot as plt
-
-
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import roc_curve, roc_auc_score, auc
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
-from sklearn.utils.multiclass import unique_labels
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
-from datetime import datetime
-
-
-# for dimensionality reduction
-from sklearn.decomposition import PCA
-
-import lightgbm as lgb
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-
-
-import h5py
-import re
-from sklearn.model_selection import RepeatedKFold
-from sklearn.feature_selection import RFECV
-
-from sklearn.preprocessing import LabelEncoder
-
-
-import numpy as np
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-import xgboost as xgb
-import lightgbm as lgb
-from sklearn.metrics import f1_score
-
-from scipy import stats
-from scipy import signal
-from scipy.signal import butter, lfilter, detrend
-
-
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
-
-
-from obspy.geodetics.base import gps2dist_azimuth
-
-
-from datetime import datetime, timedelta
-
-# to compute the time
-import time
-
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-pd.set_option('display.max_columns', None)
-
-
-import obspy
-
-# importing the dependencies. 
-import pandas as pd
-import numpy as np
-import scipy as sc
-from scipy import signal
-
-import matplotlib.pyplot as plt
-import h5py
-import obspy
-from obspy.signal.filter import envelope
-from obspy.clients.fdsn import Client
-from tqdm import tqdm
-from glob import glob
-import tsfel
-import random
-from datetime import timedelta
-import calendar
-
-import concurrent.futures
-
-#import seis_feature
-#from seis_feature import compute_physical_features
-from multiprocessing import Pool
-
-
-import numpy as np
-import pandas as pd
-import h5py
-from tqdm import tqdm
-from functools import partial
-import multiprocessing
-import obspy
-
-from tsfel import time_series_features_extractor, get_features_by_domain
-import concurrent.futures
-
-
-from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.preprocessing import LabelEncoder
-from torch.utils.data import DataLoader, TensorDataset
-
-
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import torch.optim as optim
 import torchvision.transforms as transforms
 import torch.nn.functional as F
-
-
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
-
-
-
-
-
-
 
 # Check if a GPU is available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -204,14 +35,6 @@ class SeismicCNN(nn.Module):
     # Lets define a function to visualize the activation as well. 
     
     
-    
-    
-
-
-    
-
-
-
 # defining a very simple CNN
 
 class SeismicCNN_batch(nn.Module):
@@ -250,12 +73,6 @@ class SeismicCNN_batch(nn.Module):
     # Lets define a function to visualize the activation as well. 
     
     
-    
-    
-# Check if a GPU is available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 # defining a very simple CNN
 
 class SeismicCNN_batch_do(nn.Module):
@@ -298,10 +115,6 @@ class SeismicCNN_batch_do(nn.Module):
     # Lets define a function to visualize the activation as well. 
     
     
-    
-    
-    
-
     
 class SeismicCNN_more(nn.Module):
     def __init__(self, num_classes = 4, num_channels = 1, num_features = 5000, num_additional_conv_layers = 0):
@@ -363,16 +176,7 @@ class SeismicCNN_more(nn.Module):
         return num_features_after_conv   
     
     
-    
-    
-    
-    
-# seismic net
-# Check if a GPU is available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-# defining a very simple CNN
+    # defining a very simple CNN
 
 class SeismicNet(nn.Module):
     def __init__(self, num_classes=4, num_channels = 3, num_features = 15000):
@@ -633,10 +437,6 @@ class SeismicNet_do(nn.Module):
 # Arch-time from Deepquake paper. 
 # it originally takes 2000 samples as input. 
 
-# Check if a GPU is available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 # defining a very simple CNN
 
 class Archtime(nn.Module):
@@ -705,9 +505,6 @@ class Archtime(nn.Module):
     
     
     
-
-
-
 # defining a very simple CNN
 
 class Archtime_do(nn.Module):
@@ -799,11 +596,6 @@ class Archtime_do(nn.Module):
 
 # WaveDecomPNet from Jiuxin's paper. 
 # it originally takes 000 samples as input. 
-
-# Check if a GPU is available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 # defining a very simple CNN
 
 class WaveDecompNet(nn.Module):

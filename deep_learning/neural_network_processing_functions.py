@@ -2,135 +2,73 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
-import obspy
-from obspy.signal.filter import envelope
-from obspy.clients.fdsn import Client
 from tqdm import tqdm
-from glob import glob
-import tsfel
-import random
-
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from collections import Counter
-from imblearn.under_sampling import RandomUnderSampler
-from sklearn.neural_network import MLPClassifier
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, roc_curve, roc_auc_score, auc, classification_report, confusion_matrix
-from sklearn.utils.multiclass import unique_labels
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from datetime import datetime
-
-from sklearn.decomposition import PCA
-import lightgbm as lgb
-from sklearn.model_selection import RepeatedKFold
-from sklearn.feature_selection import RFECV
-from sklearn.datasets import load_iris
-from sklearn.metrics import f1_score
-
-from scipy import stats
 from scipy import signal
-from sklearn.preprocessing import StandardScaler
-
-from obspy.geodetics.base import gps2dist_azimuth
-
-from datetime import timedelta
-import time
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset
-
 from scipy.signal import resample
+from torch.utils.data import random_split
 
 
-number_epochs = 100
-# Define the loss function (e.g., Cross-Entropy)
-criterion = nn.CrossEntropyLoss()
+class PNWDataSet(Dataset): # create custom dataset
+    def __init__(self, data,labels): # initialize
+        self.data = data 
+        self.labels = labels 
 
+    def __len__(self):
+        return len(self.data)
 
-
-
-
+    def __getitem__(self, index):
+        sample_data = self.data[index]
+        sample_labels = self.labels[index]
+        return torch.Tensor(sample_data),(sample_labels) # return data as a tensor
 
 def extract_waveforms(cat, file_name, start=7000, num_features=5000, before=5000, after=10000, number_samples=1000, num_channels=1, all_samples=False, shifting=True):
     
     """
     This is a function defined to extract the waveforms stored in the disk. 
-    
-    
-    
-    Inputs
-    
+    Inputs:
     cat -  Catalog containing metadata of the events, so we can extract the data using the bucket information
     file_name - path of the h5py file containing the data
     start - origin or first arrival time
-    
-    
     num_features - window length to extract
-    
-    
     before - number of samples to take before the arrival time
-    
     after - number of samples to take after the arrival time.
-    
-    
     num_samples - no. of events per class to extract
-    
-    
     num_channels - no. of channels per event to extract, if set 1, will extract Z component, if set any other number, will extract - ZNE component. 
-    
     all_samples - if true, will extract all the samples corresponding of a given class
-    
     shifting - if true, will extract windows randomly starting between P-5, P-20. The random numbers follow a gaussian distribution. 
+    Outputs:
+    
+    """   
     
     
-    
-    
-    Outputs
-    
-    
-    
-    
-    
-    """
-    
-    
-    
-    # This line initializes empty lists to store traces
-    st = []
-    
+    # This line initializes empty lists to store waveform data (not traces as in obspy definition)
+    st = []    
     # This line initializes empty list to store corresponding event ids. 
-    event_ids = []
-    
+    event_ids = []    
     
     # This line opens an HDF5 file in read only mode, the with statement ensures that the file is properly
     # closed after the block of code is executed. 
     with h5py.File(file_name, 'r') as f:
-        cat_trace = cat['trace_name'].values
-        
+        cat_trace = cat['trace_name'].values        
         
         # If all_samples flag is true, it assigns the values equal to the length of cat_trace to number_samples
         if all_samples:
             number_samples = len(cat_trace)
-
             
         # Generates a list of random integers between 500 and 2000 (inclusive) if shifting flag is true, otherwise
         # it will generate a list of before equal to number_samples in the length. 
         
         # Note that the np.full function is defined to create a numpy array of specific shape and fill it with a constant value. 
         random_integer_list = np.random.randint(500, 2001, size=number_samples) if shifting else np.full(number_samples, before)
-
-        
-        # This list is going to iterate over number_samples. 
         
         # Note - so since we are taking the first number_samples from the dataset mainly for training,
         # it may include some temporal bias, in future. a to-do will be to randomize this extraction. 
@@ -144,7 +82,12 @@ def extract_waveforms(cat, file_name, start=7000, num_features=5000, before=5000
             
             # so this code is taking the trace information and splitting it using the $ delimiter
             # because the trace bucket and index are split. 
-            trace_info = cat_trace[i].split('$')
+            
+            
+            ## here is really a random sampling.
+            ii = np.random.randint(len(cat_trace))
+            
+            trace_info = cat_trace[ii].split('$')
             
             # storing the bucket information
             bucket = trace_info[0]
@@ -158,17 +101,15 @@ def extract_waveforms(cat, file_name, start=7000, num_features=5000, before=5000
                 # This is a kind of quality check applied on the data. 
                 # we can also apply some other kind of quality check at this stage. 
                 if np.sum(z_component) != 0:
-                    event_ids.append(cat['event_id'].values[i])
+                    event_ids.append(cat['event_id'].values[ii])
                     st.append(z_component)
             else:
                 trace_data = f['/data/'+bucket][ind, :, start - before: start + after]
                 if np.sum(trace_data) != 0:
-                    event_ids.append(cat['event_id'].values[i])
+                    event_ids.append(cat['event_id'].values[ii])
                     st.append(trace_data)
 
     return st, event_ids
-
-
 
 
               
@@ -205,10 +146,6 @@ def apply_cosine_taper(arrays, taper_percent=10):
     return np.array(tapered_arrays)
 
 
-
-
-
-
 def butterworth_filter(arrays, lowcut, highcut, fs, num_corners, filter_type='bandpass'):
     """
     Apply a Butterworth filter (bandpass, highpass, or lowpass) to each array in an array of arrays.
@@ -225,38 +162,35 @@ def butterworth_filter(arrays, lowcut, highcut, fs, num_corners, filter_type='ba
     Returns:
         numpy array: Filtered array with the same shape as the input.
     """
-    filtered_arrays = []
+    
+    # Normalize the frequency values to Nyquist frequency (0.5*fs)
+    lowcut_norm = lowcut / (0.5 * fs)
+    highcut_norm = highcut / (0.5 * fs)
 
+    # Design the Butterworth filter based on the filter type
+    if filter_type == 'bandpass':
+        b, a = signal.butter(num_corners, [lowcut_norm, highcut_norm], btype='band')
+    elif filter_type == 'highpass':
+        b, a = signal.butter(num_corners, lowcut_norm, btype='high')
+    elif filter_type == 'lowpass':
+        b, a = signal.butter(num_corners, highcut_norm, btype='low')
+    else:
+        raise ValueError("Invalid filter_type. Use 'bandpass', 'highpass', or 'lowpass'.")
+
+
+    filtered_arrays = []
     for data in arrays:
         filtered_channels = []
-
         # Iterate over channels
         for channel in data:
-            # Normalize the frequency values to Nyquist frequency (0.5*fs)
-            lowcut_norm = lowcut / (0.5 * fs)
-            highcut_norm = highcut / (0.5 * fs)
-
-            # Design the Butterworth filter based on the filter type
-            if filter_type == 'bandpass':
-                b, a = signal.butter(num_corners, [lowcut_norm, highcut_norm], btype='band')
-            elif filter_type == 'highpass':
-                b, a = signal.butter(num_corners, lowcut_norm, btype='high')
-            elif filter_type == 'lowpass':
-                b, a = signal.butter(num_corners, highcut_norm, btype='low')
-            else:
-                raise ValueError("Invalid filter_type. Use 'bandpass', 'highpass', or 'lowpass'.")
-
             # Apply the filter to the channel using lfilter
-            filtered_channel = signal.lfilter(b, a, channel)
+            filtered_channel = signal.filtfilt(b, a, channel)
             filtered_channels.append(filtered_channel)
-
         # Stack the filtered channels along the second dimension (axis 1)
         filtered_data = np.stack(filtered_channels)
         filtered_arrays.append(filtered_data)
 
     return np.array(filtered_arrays)
-
-
 
 
 
@@ -279,7 +213,7 @@ def normalize_arrays_by_max(arrays):
         # Iterate over channels
         for channel in data:
             # Normalize the channel by its maximum value
-            max_value = np.max(channel)
+            max_value = np.max(np.abs(channel))
             normalized_channel = channel / max_value
             normalized_channels.append(normalized_channel)
 
@@ -288,10 +222,6 @@ def normalize_arrays_by_max(arrays):
         normalized_arrays.append(normalized_data)
 
     return np.array(normalized_arrays)
-
-
-
-
 
 
 def retain_nonzero_arrays(arrays):
@@ -306,30 +236,19 @@ def retain_nonzero_arrays(arrays):
         numpy array: Normalized array with the same shape as the input.
     """
     nonzero_arrays = []
-
     for data in arrays:
-
         if np.sum(data[0] != 0):
-           nonzero_arrays.append(data)
-        
-        
-        
-
+           nonzero_arrays.append(data)     
     return np.array(nonzero_arrays)
 
 
 
-
-
-def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_size = 32, num_channels = 1, train_size = 2400, test_size = 600, num_features = 5000, shifting = True, all_samples = True):
+def extract_datasets(data_noise="/data/whd01/yiyu_data/PNWML/noise_waveforms.hdf5", medata_noise="/data/whd01/yiyu_data/PNWML/noise_metadata.csv", data_comcat=  "/data/whd01/yiyu_data/PNWML/comcat_waveforms.hdf5", metadata_comcat="/data/whd01/yiyu_data/PNWML/comcat_metadata.csv", data_exotic="/data/whd01/yiyu_data/PNWML/exotic_waveforms.hdf5",metadata_exotic="/data/whd01/yiyu_data/PNWML/exotic_metadata.csv",before = 5000, after = 10000, num_samples = 1000, batch_size = 32, num_channels = 1, train_size = 2400, test_size = 600, num_features = 5000, shifting = True, all_samples = True):
 
     
     """
     This is a function to extract train, test and validation dataset in tensor format as required by Pytorch
     Here is a description of the parameters: - 
-    
-    
-    
     
     Parameters
     -----------
@@ -337,24 +256,15 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     before: if shifting is not true, samples will be extracted (P-50), 
     where P refers to the starttime of the P/pick time of the event.
     The shifting helps in generalizability of the model. The samples will be picked randomly from
-    (P-20, P-5)
-    
-    after: if shifting is not true, samples will be extracted (P+100)
-    
-    num_samples: number of samples per classs to extract
-    
-    batch size: batch size of the samples that would be loaded in one iteration from the dataloader
-    
+    (P-20, P-5)    
+    after: if shifting is not true, samples will be extracted (P+100)    
+    num_samples: number of samples per classs to extract    
+    batch size: batch size of the samples that would be loaded in one iteration from the dataloader    
     num_channels: 1, Currently just using the Z component, but we can use multiple channels. 
-    
-    train_size: its the number of elements (per class) in the training dataset on the first split.  (splitting the dataset into train and temp)
-    
+    train_size: its the number of elements (per class) in the training dataset on the first split.  (splitting the dataset into train and temp)    
     test_size: its the number of elements (per class) in the testing dataset on the second split. (splitting the temp further into test and val)
-    
-    num_features: The number of features or window length. 
-    
-    shifting: If true, the samples will be extracted randomly from P-5, P-20s
-    
+    num_features: The number of features or window length.     
+    shifting: If true, the samples will be extracted randomly from P-5, P-20s    
     all_samples: if true, all the samples will be loaded in each class
     
     
@@ -366,52 +276,41 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     
     train_dataloader: The dataloader is required when training the model, taking a batch of the samples at a given time. 
     
-    y_train: the training labels, 
-    
-    
+    y_train: the training labels,  
     
     test_dataset, test_dataloader, y_test: self explanatory, the size of test will be determined by the 4*test_size parameter. 
     
-    
-    
     val_dataset, val_dataloader, y_val: self explanatory, the size of validation set would be determined as 
-    
-    (total_samples - 4*train_size - 4*test_size)
+      (total_samples - 4*train_size - 4*test_size)
      
     """
     
-    
-    
-    
-    
-    
-    
-    noise_file_name = "/data/whd01/yiyu_data/PNWML/noise_waveforms.hdf5"
-    noise_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/noise_metadata.csv")
-    noise_csv_file['event_id'] = [noise_csv_file['trace_start_time'][i]+'_noise' for i in range(len(noise_csv_file))]
+        
+    noise_metadata = pd.read_csv(metadata_noise)
+    noise_metadata['event_id'] = [noise_metadata['trace_start_time'][i]+'_noise' for i in range(len(noise_metadata))]
 
     # accessing the data files
-    comcat_file_name = "/data/whd01/yiyu_data/PNWML/comcat_waveforms.hdf5"
-    # acessing the metadata information
-    comcat_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/comcat_metadata.csv")
-
+    comcat_metadata = pd.read_csv(metadata_comcat)
 
     # accessing the data files
-    exotic_file_name = "/data/whd01/yiyu_data/PNWML/exotic_waveforms.hdf5"
-    # acessing the metadata information
-    exotic_csv_file = pd.read_csv("/data/whd01/yiyu_data/PNWML/exotic_metadata.csv")
+    exotic_metadata = pd.read_csv(metadata_exotic)
     
-    cat_exp = comcat_csv_file[comcat_csv_file['source_type'] == 'explosion']
-    cat_eq = comcat_csv_file[comcat_csv_file['source_type'] == 'earthquake']
-    cat_su = exotic_csv_file[exotic_csv_file['source_type'] == 'surface event']
+    cat_exp = comcat_metadata[comcat_metadata['source_type'] == 'explosion']
+    cat_eq = comcat_metadata[comcat_metadata['source_type'] == 'earthquake']
+    cat_su = exotic_metadata[exotic_metadata['source_type'] == 'surface event']
     
+    
+    #extract wavefpr,s
     ## So in the below I am taking a 50s window which starts anywhere randomly from (P-20, P-5) - 
-    ## so the first output of the below is the array containing trace data and second output is the corresponding event id
+    ## a is a list of obspy traces, b is a list of eventid
     
-    a_noise, b_noise = extract_waveforms(noise_csv_file, noise_file_name, num_features = num_features, start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
-    a_exp, b_exp = extract_waveforms(cat_exp, comcat_file_name, num_features = num_features, start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
-    a_eq, b_eq = extract_waveforms(cat_eq, comcat_file_name, num_features = num_features,  start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
-    a_su, b_su = extract_waveforms(cat_su, exotic_file_name, num_features = num_features, start = 7000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
+    a_noise, b_noise = extract_waveforms(noise_metadata, data_noise, num_features = num_features, start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
+    
+    a_exp, b_exp = extract_waveforms(cat_exp, data_comcat, num_features = num_features, start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
+    
+    a_eq, b_eq = extract_waveforms(cat_eq, data_comcat, num_features = num_features,  start = 5000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
+    
+    a_su, b_su = extract_waveforms(cat_su, data_exotic, num_features = num_features, start = 7000, before = before, after = after, number_samples = num_samples, num_channels = num_channels, shifting = shifting, all_samples = all_samples)
     
     
     
@@ -429,46 +328,36 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
         d_eq = d_eq[:, np.newaxis, :]
         d_su = d_su[:, np.newaxis, :]
     
-    
+    # remove zero data, which is only necessary if we just use single-comp sensors, and I am not even sure it would be necessary actually...
     d_noise = retain_nonzero_arrays(d_noise)
     d_exp = retain_nonzero_arrays(d_exp)
     d_eq = retain_nonzero_arrays(d_eq)
     d_su = retain_nonzero_arrays(d_su)
     
-    
-    
     X = np.vstack([d_noise, d_exp, d_eq, d_su])
-    y = ['noise']*len(d_noise)+['explosion']*len(d_exp)+['earthquake']*len(d_eq)+['surface']*len(d_su)
-    event_ids = np.hstack([b_noise, b_exp, b_eq, b_su])
-
+    
     tapered = apply_cosine_taper(X)
     filtered = butterworth_filter(tapered, lowcut = 1, highcut = 10, fs = 100, num_corners = 4, filter_type='bandpass')
-
-    
-    # This step was causing the problem. it was making the data appear similar. 
-    #scaler = MinMaxScaler()
-    #data = scaler.fit_transform(filtered)
-    
-    print(filtered.shape)
     data = normalize_arrays_by_max(filtered)
-    #print(y)
+  
     
-    data = resample(data, num_features, axis = 2)
+    # labels to encode   
+    y = ['noise']*len(d_noise)+['explosion']*len(d_exp)+['earthquake']*len(d_eq)+['surface']*len(d_su)
+    event_ids = np.hstack([b_noise, b_exp, b_eq, b_su])
+    y_encoded = label_encoder.fit_transform(y)
+       
     
-    
+    # Make the data a PNWDataSet
+    custom_dataset = PNWDataSet(data,y)
+    train_dataset_torch, val_dataset = random_split(custom_dataset, [train_size, test_size])
     
     
     # Split data into training and testing sets
+    train_dataset, test_dataset = random_split(custom_dataset, [train_size, test_size])
+
     train_data, temp_data, y_train, y_temp = train_test_split(data, y,  test_size= 4*num_samples - 4*train_size, random_state=42)
     val_data, test_data, y_val, y_test = train_test_split(temp_data, y_temp, test_size = 4*test_size, random_state = 42)
 
-    
-
-    
-    
-    
-    
-    
     
     label_encoder = LabelEncoder()
 
@@ -478,7 +367,6 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     train_labels = torch.Tensor(train_labels_encoded) # Suitable for use in pytorch. 
 
     train_data = torch.Tensor(train_data)
-
 
     train_dataset = TensorDataset(train_data, train_labels) # Combines the training data and the numerical labels into 
     # single dataset. 
@@ -511,11 +399,9 @@ def extract_datasets(before = 5000, after = 10000, num_samples = 1000, batch_siz
     return train_dataset, train_loader, y_train, test_dataset, test_loader, y_test, val_dataset, val_loader, y_val, event_ids
     
     
-    
 
 
-
-def train_model(model, train_loader, val_dataset, val_loader, optimizer, n_epochs=10, batch_size=32, num_features=15000, num_channels=3):
+def train_model(model, train_loader, val_dataset, val_loader, optimizer, n_epochs=100, batch_size=32, num_features=15000, num_channels=3,criterion=nn.CrossEntropyLoss()):
     """
     Function to train and evaluate the defined model.
 
