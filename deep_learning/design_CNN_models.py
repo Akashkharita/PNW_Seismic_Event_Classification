@@ -446,7 +446,8 @@ class Archtime(nn.Module):
         self.num_features = num_features
         self.num_channels = num_channels
         # Define the layers of the CNN architecture
-        self.conv1 = nn.Conv1d(in_channels= num_channels, out_channels=64, kernel_size= 10, stride = 4, padding = 0)       
+        self.conv1 = nn.Conv1d(in_channel
+        s= num_channels, out_channels=64, kernel_size= 10, stride = 4, padding = 0)       
         self.conv2 = nn.Conv1d(in_channels = 64, out_channels = 64, kernel_size = 10, stride = 2)
         self.conv3 = nn.Conv1d(in_channels = 64, out_channels = 64, kernel_size = 10, stride = 2)
         self.conv4 = nn.Conv1d(in_channels = 64, out_channels = 64, kernel_size = 10, stride = 2)
