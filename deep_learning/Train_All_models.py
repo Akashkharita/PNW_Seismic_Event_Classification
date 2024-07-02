@@ -86,10 +86,10 @@ start=-50
 input_window_length=100 # in seconds
 fs=50 # target sampling rate
 
-number_data_per_class=4000 # number of data samples per class
+number_data_per_class=5000 # number of data samples per class
 num_channels=3  # number of components to check
 
-SNR_THR = 0
+SNR_THR = 12
 
 all_data=False
 shifting=True
@@ -108,8 +108,6 @@ criterion=nn.CrossEntropyLoss()
 
 
 # ##  Define models
-
-# In[5]:
 
 
 # adding some more comments here
@@ -181,7 +179,6 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
                 # we will add noise to the data randomly
                 for iibatch in range(inputs.shape[0]):
                     if np.random.rand(1)>0.5:
-                        print("augmenting noise")
                         iik = inoise[torch.randperm(len(inoise))][0]
                         noise = shuffle_phase_tensor(inputs[iik,:,:]).to(device)
                         inputs[iibatch,:,:] = inputs[iibatch,:,:] + torch.rand(1).to(device)*noise/2
@@ -228,10 +225,10 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
                 torch.save(model.state_dict(), 'best_model.pth')
             else:
                 epochs_no_improve += 1
-                print(f'No improvement in validation loss for {epochs_no_improve} epochs.')
+                # print(f'No improvement in validation loss for {epochs_no_improve} epochs.')
 
             if epochs_no_improve == patience:
-                print('Early stopping triggered.')
+                # print('Early stopping triggered.')
                 break
 
         
@@ -830,7 +827,7 @@ plt.show()
 plt.savefig("mycnn_noaugmentation.png")
 
 ## ResCNN no augmentation
-print("Training MyCNN no augmentation")
+print("Training MyResCNN no augmentation")
 model3 = MyResCNN(num_classes=4, num_channels=num_channels,dropout_rate=dropout).to(device)  # Use 'cuda' if you have a GPU available
 (loss_time, val_loss_time, val_accuracy_time,test_loss,test_accuracy) = train_model(model3,
         train_loader,val_loader,test_loader,n_epochs=n_epochs,
@@ -946,7 +943,6 @@ model_6 = MyCNN(num_classes=4, num_channels=num_channels,dropout_rate=dropout).t
         model_6,train_loader,val_loader,test_loader,
         n_epochs=n_epochs,learning_rate=learning_rate,criterion=criterion,
         augmentation=False)
-
 print("this was training MyCNN without augmentation")
 torch.save(model_6,'model_instance_6.pth')
 model_6.eval()
