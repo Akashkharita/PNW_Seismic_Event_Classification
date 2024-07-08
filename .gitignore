@@ -1,5 +1,6 @@
 results/*.pkl
 results/*.csv
+results/*.joblib
 extracted_features/
-results/best_rf_model_all_features_50_100.joblib
+#results/best_rf_model_all_features_50_100.joblib
 
