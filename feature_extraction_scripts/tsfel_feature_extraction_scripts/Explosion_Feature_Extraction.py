@@ -97,7 +97,7 @@ data_exp = np.array(data_exp)
 
 tapered_exp = apply_cosine_taper(data_exp, taper_percent = taper_amount)  
 ## Mention the bandpass filter frequencies. 
-filtered_exp = np.array(butterworth_filter(data_exp, low, high, original_sr, num_corners, 'bandpass'))
+filtered_exp = np.array(butterworth_filter(tapered_exp, low, high, original_sr, num_corners, 'bandpass'))
 
 exp_Z = filtered_exp         
 # Normalizing the data.              

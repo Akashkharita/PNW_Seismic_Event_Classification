@@ -117,22 +117,18 @@ else:
 
                   
 data_eq = np.array(data_eq)
+tapered_eq = apply_cosine_taper(data_eq, taper_percent = taper_amount)            
+filtered_eq = np.array(butterworth_filter(tapered_eq, low, high, original_sr,  num_corners, 'bandpass'))
 
 
-tapered_eq = apply_cosine_taper(data_eq, taper_percent = taper_amount) 
-            
-filtered_eq = np.array(butterworth_filter(data_eq, low, high, original_sr,  num_corners, 'bandpass'))
 
 eq_Z = filtered_eq
 
-
 # Resampling the data
 eq_Z = np.array([resample_array(arr, original_sr, new_sr) for arr in eq_Z])
-
-              
+             
 # Normalizing the data.              
 eq_Z = eq_Z/np.max(abs(eq_Z), axis = 1)[:, np.newaxis]
-
 
 
 

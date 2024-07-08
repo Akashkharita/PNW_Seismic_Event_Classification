@@ -37,15 +37,19 @@ import calendar
 import concurrent.futures
 import seaborn as sns
 from scipy.signal import resample
+import matplotlib.lines as mlines
+from joblib import dump, load
+import tsfel
+cfg_file = tsfel.get_features_by_domain()
+from tsfel import time_series_features_extractor
 
-
-
-
-# We need to change the path to import the seis feature library. 
+import sys
 
 
 
 def resample_array(arr, original_rate, desired_rate):
+    ## This function uses scipy resample. 
+    
     num_samples = len(arr)
     duration = num_samples / original_rate  # Duration of the array in seconds
     new_num_samples = int(duration * desired_rate)
@@ -123,7 +127,7 @@ trace_cm_phy_tsf_man = []
 annot_kws = {"fontsize": 15}
 
 
-def plot_confusion_matrix(cf = trace_cm_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface']):
+def plot_confusion_matrix(cf = trace_cm_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface'], figure_name = 'abc.png'):
 
 
     labels = ['Precision', 'Recall', 'F1-Score']
@@ -144,13 +148,14 @@ def plot_confusion_matrix(cf = trace_cm_phy_tsf_man, class_labels = ['Earthquake
     plt.ylabel('Actual', fontsize = 15)
     #plt.title('Total samples: '+str(len(y_pred)), fontsize = 20)
     plt.tight_layout()
+    plt.savefig(figure_name)
 
 
     
     
 trace_report_phy_tsf_man = []
 
-def plot_classification_report(cr = trace_report_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface']): 
+def plot_classification_report(cr = trace_report_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface'], figure_name = 'abc.png'): 
 
 
     labels = ['Precision', 'Recall', 'F1-Score']
@@ -180,7 +185,7 @@ def plot_classification_report(cr = trace_report_phy_tsf_man, class_labels = ['E
     plt.tight_layout()
 
     # Show the plot
-    plt.show()
+    plt.savefig(figure_name)
     
     
     
@@ -228,4 +233,8 @@ def interquartile(df):
     #filtered_df = filtered_df.dropna(axis = 1)
 
     return filtered_df
+
+
+
+
 

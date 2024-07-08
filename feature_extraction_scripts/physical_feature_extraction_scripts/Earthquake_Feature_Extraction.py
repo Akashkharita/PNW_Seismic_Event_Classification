@@ -121,7 +121,7 @@ data_eq = np.array(data_eq)
 
 tapered_eq = apply_cosine_taper(data_eq, taper_percent = taper_amount) 
             
-filtered_eq = np.array(butterworth_filter(data_eq, low, high, original_sr,  num_corners, 'bandpass'))
+filtered_eq = np.array(butterworth_filter(tapered_eq, low, high, original_sr,  num_corners, 'bandpass'))
 
 eq_Z = filtered_eq
 
