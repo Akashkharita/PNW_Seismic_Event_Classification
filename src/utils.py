@@ -80,11 +80,9 @@ def apply_cosine_taper(arrays, taper_percent=10):
     return np.array(tapered_arrays)              
               
     
-    
-
-def butterworth_filter(arrays, lowcut = 1, highcut = 10, fs = 100, num_corners = 4, filter_type='bandpass'):
+def butterworth_filter(arrays, lowcut=1, highcut=10, fs=100, num_corners=4, filter_type='bandpass'):
     """
-    Apply a Butterworth filter (bandpass, highpass, or lowpass) to each array in an array of arrays.
+    Apply a Butterworth filter (bandpass, highpass, or lowpass) to each array in an array of arrays using filtfilt.
 
     Parameters:
         arrays (list of numpy arrays): List of arrays to be filtered.
@@ -113,8 +111,8 @@ def butterworth_filter(arrays, lowcut = 1, highcut = 10, fs = 100, num_corners =
         else:
             raise ValueError("Invalid filter_type. Use 'bandpass', 'highpass', or 'lowpass'.")
 
-        # Apply the filter to the data using lfilter
-        filtered_data = signal.lfilter(b, a, data)
+        # Apply the filter to the data using filtfilt
+        filtered_data = signal.filtfilt(b, a, data)
 
         filtered_arrays.append(filtered_data)
 

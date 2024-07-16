@@ -876,7 +876,7 @@ sorted_feature_labels = [feature_labels[i] for i in sorted_indices]
 colors = [feature_colors[i] for i in sorted_indices]
 
 # Plotting
-plt.figure(figsize=(10, 15))
+plt.figure(figsize=(20, 15))
 bars = plt.barh(sorted_feature_labels[0:50], sorted_feature_importances[0:50])
 
 # Color bars to match yticklabels

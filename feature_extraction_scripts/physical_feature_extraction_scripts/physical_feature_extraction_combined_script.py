@@ -68,8 +68,8 @@ file_names = {
     'noise': ("noise_waveforms.hdf5", "noise_metadata.csv")
 }
 
-# Function to process data
-def process_data(class_type):
+# Function to extract data
+def extract_data(class_type):
     file_name, metadata_name = file_names[class_type]
     file_path = os.path.join(base_path, file_name)
     metadata_path = os.path.join(base_path, metadata_name)
@@ -114,7 +114,7 @@ def process_data(class_type):
     return data
 
 # Process and extract features
-data = process_data(class_type)
+data = extract_data(class_type)
 
 if data is None:
     sys.exit("No data to process.")
