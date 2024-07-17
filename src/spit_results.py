@@ -867,7 +867,10 @@ plt.rcParams['xtick.labelsize'] = 16  # Font size for xtick labels
 plt.rcParams['ytick.labelsize'] = 20  # Font size for ytick labels
 # Sample feature importances and feature labels
 feature_importances = final_imp
-feature_labels = features
+
+# Remove "0_" prefix from features that contain it
+feature_labels = np.array([name[2:] if name.startswith("0_") else name for name in features])
+
 
 # Sort feature importances and feature labels together
 sorted_indices = sorted(range(len(feature_importances)), key=lambda k: feature_importances[k], reverse=True)
@@ -896,16 +899,15 @@ plt.legend(legend_handles, legend_labels, title='Features', title_fontsize=20, f
 
 plt.xlabel('Feature Importance', fontsize=20)
 plt.ylabel('Feature', fontsize=20)
-#plt.title('Top 50 Feature Importances', fontsize=20)
-plt.gca().invert_yaxis()  # Invert y-axis to display highest importance at the top
 
 # Set y-axis tick label size
 plt.yticks(fontsize=14)
 
-plt.savefig('../figures/Feature_Importances_'+filename+'_.png')
+#plt.title('Top 50 Feature Importances', fontsize=20)
+plt.gca().invert_yaxis()  # Invert y-axis to display highest importance at the top
 
-
-
+plt.savefig('../figures/Feature_Importances_'+filename+'_.png', bbox_inches='tight')
+plt.show()
 
 
 """"
