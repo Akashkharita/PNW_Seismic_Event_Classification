@@ -42,7 +42,7 @@ from joblib import dump, load
 import tsfel
 cfg_file = tsfel.get_features_by_domain()
 from tsfel import time_series_features_extractor
-
+from math import radians, sin, cos, sqrt, atan2
 import sys
 
 
@@ -125,69 +125,83 @@ trace_cm_phy_tsf_man = []
 annot_kws = {"fontsize": 15}
 
 
-def plot_confusion_matrix(cf = trace_cm_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface'], figure_name = 'abc.png'):
 
 
-    labels = ['Precision', 'Recall', 'F1-Score']
-   
-    plt.figure(figsize = [8,6])
-
-    # Set annotation font size within each block
+def plot_confusion_matrix(cf, class_labels=['Earthquake', 'Explosion', 'Noise', 'Surface'], figure_name='abc.png'):
+    # Define the new order
+    new_order = ['Earthquake', 'Explosion', 'Surface', 'Noise']
     
-    ax = sns.heatmap(cf, annot=True, cmap='Blues', fmt='d', xticklabels = class_labels, yticklabels = class_labels, annot_kws=annot_kws)
+    # Compute new index positions based on the given order
+    index_mapping = [class_labels.index(label) for label in new_order]  # Find indices for new order
+    
+    # Reorder the confusion matrix
+    cf = cf[np.ix_(index_mapping, index_mapping)]  # Reorder both rows and columns
 
+    # Set figure size
+    plt.figure(figsize=[8,6])
 
-    # Set tick label font size
-    ax.set_xticklabels(class_labels, fontsize=15)
-    ax.set_yticklabels(class_labels, fontsize=15)
+    # Create heatmap
+    ax = sns.heatmap(cf, annot=True, cmap='Blues', fmt='d', xticklabels=new_order, yticklabels=new_order)
 
+    # Set tick labels font size
+    ax.set_xticklabels(new_order, fontsize=15)
+    ax.set_yticklabels(new_order, fontsize=15)
 
-    plt.xlabel('Predicted', fontsize = 15)
-    plt.ylabel('Actual', fontsize = 15)
-    #plt.title('Total samples: '+str(len(y_pred)), fontsize = 20)
+    # Labels and layout
+    plt.xlabel('Predicted', fontsize=15)
+    plt.ylabel('Actual', fontsize=15)
     plt.tight_layout()
+
+    # Save figure
     plt.savefig(figure_name)
 
-
+    plt.show()
     
     
 trace_report_phy_tsf_man = []
 
-def plot_classification_report(cr = trace_report_phy_tsf_man, class_labels = ['Earthquake', 'Explosion','Noise','Surface'], figure_name = 'abc.png'): 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+def plot_classification_report(cr, class_labels=['Earthquake', 'Explosion', 'Noise', 'Surface'], figure_name='abc.png'): 
+    # Define the new order
+    new_order = ['Earthquake', 'Explosion', 'Surface', 'Noise']
+
+    # Compute new index positions based on the given order
+    index_mapping = [class_labels.index(label) for label in new_order]  
+
+    # Reorder classification report columns
+    cr = pd.DataFrame(cr).iloc[:3, index_mapping]  
 
     labels = ['Precision', 'Recall', 'F1-Score']
-    #class_labels = ['Earthquake', 'Explosion','Noise','Surface']
-    # Set a pleasing style
+    
+    # Set style
     sns.set_style("whitegrid")
 
-    # Create a figure and axes for the heatmap
-    plt.figure(figsize = [8,6])
-    ax = sns.heatmap(pd.DataFrame(cr).iloc[:3, :len(class_labels)], annot=True, cmap='Blues', yticklabels = labels, xticklabels=class_labels, vmin=0.8, vmax=1, annot_kws=annot_kws)
+    # Create figure
+    plt.figure(figsize=[8,6])
+    ax = sns.heatmap(cr, annot=True, cmap='Blues', yticklabels=labels, xticklabels=new_order, vmin=0.8, vmax=1)
 
-    # Set labels and title
-    # Set tick label font size
-    ax.set_xticklabels(class_labels, fontsize=15)
+    # Set tick labels font size
+    ax.set_xticklabels(new_order, fontsize=15)
     ax.set_yticklabels(labels, fontsize=15)
 
-    ax.set_xlabel('Metrics', fontsize=15)
-    ax.set_ylabel('Classes', fontsize=15)
+    # Labels and title
+    ax.set_xlabel('Classes', fontsize=15)
+    ax.set_ylabel('Metrics', fontsize=15)
     ax.set_title('Classification Report', fontsize=18)
-
-    # Create a colorbar
-    #cbar = ax.collections[0].colorbar
-    #cbar.set_ticks([0.5, 1])  # Set custom tick locations
-    #cbar.set_ticklabels(['0', '0.5', '1'])  # Set custom tick labels
 
     # Adjust layout
     plt.tight_layout()
 
-    # Show the plot
+    # Save figure
     plt.savefig(figure_name)
+
+    plt.show()
     
-    
-    
-from math import radians, sin, cos, sqrt, atan2
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     # Convert latitude and longitude from degrees to radians
@@ -213,14 +227,12 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return distance
     
 
+
     
 ## Some helpful functions in plotting 
-def interquartile(df):
+def interquartile(df, lower_quantile = 0.1, upper_quantile = 0.90):
 
     # Set the lower and upper quantile thresholds (25% and 75%)
-    lower_quantile = 0.10
-    upper_quantile = 0.90
-
     # Filter the DataFrame based on the quantile range for all columns
     filtered_df = df[
         (df >= df.quantile(lower_quantile)) &
