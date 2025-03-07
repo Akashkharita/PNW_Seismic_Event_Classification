@@ -73,6 +73,10 @@ jupyter notebook
 
 
 ## Usage
+
+**Classic Machine Learning**
+---
+
 The [notebook](notebooks/ML_Classification_Workflow_for_Scoped.ipynb) shows an example of how to process, train and tune the machine learning model and evaluate the results. I also show the importance of including manual parameters in improving the classification performance, in addition to this, I show that this process can also be used to identify potentially mislabeled events. 
 
 
