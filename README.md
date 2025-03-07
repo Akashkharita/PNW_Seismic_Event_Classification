@@ -77,8 +77,8 @@ jupyter notebook
 **Classic Machine Learning**
 ---
 
-Classic machine learning involves the intermediate step of feature extraction. These features are extracted manually and are easier to interpret. Following is a description of various notebooks. 
- - The [notebook] shows classification of seismic events using physics based and manual features. 
+Classic machine learning involves the intermediate step of feature extraction. These features are extracted manually and are easier/more direct to interpret. Following is a description of various notebooks. 
+ - The [notebook](notebooks/classification_based_on_physical_features_only.ipynb) shows classification of seismic events using **physics based** and **manual features**. It illustrates the process of downloading features from online repository, processing them, hyperparameter tuning and performance evaluation for balanced and unbalanced datasets at station and event level. It also has sections for feature importance and feature selection. 
 
 The [notebook](notebooks/ML_Classification_Workflow_for_Scoped.ipynb) shows an example of how to process, train and tune the machine learning model and evaluate the results. I also show the importance of including manual parameters in improving the classification performance, in addition to this, I show that this process can also be used to identify potentially mislabeled events. 
 
