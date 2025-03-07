@@ -81,7 +81,7 @@ Classic machine learning involves the intermediate step of feature extraction. T
  - The [notebook](notebooks/classification_based_on_physical_features_only.ipynb) shows classification of seismic events using **physics based** and **manual features**. It illustrates the process of downloading features from online repository, processing them, hyperparameter tuning and performance evaluation for balanced and unbalanced datasets at station and event level. It also has sections for feature importance and feature selection.
  - This [notebook](notebooks/classification_based_on_tsfel_features_only.ipynb) shows the same steps but for **tsfel** and **manual** features without including the sections for feature importance.
  - This [notebook](notebooks/classification_based_on_scatnet_features.ipynb) shows the same steps as above notebook but for **scatnet** and **manual** features.
- - This [notebook](notebooks/classification_based_on_combination_of_tsfel_and_physical_features.ipynb) shows the same steps as above notebook but for combination of **tsfel** and **physical** features
+ - This [notebook](notebooks/classification_based_on_combination_of_physical_tsfel_features.ipynb) shows the same steps as above notebook but for combination of **tsfel** and **physical** features
 
 The [notebook](notebooks/ML_Classification_Workflow_for_Scoped.ipynb) shows an example of how to process, train and tune the machine learning model and evaluate the results. I also show the importance of including manual parameters in improving the classification performance, in addition to this, I show that this process can also be used to identify potentially mislabeled events. 
 
