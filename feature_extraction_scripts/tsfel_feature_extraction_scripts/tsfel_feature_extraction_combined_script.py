@@ -146,7 +146,14 @@ for i in tqdm(range(len(resampled_data))):
 
 # Save features to CSV
 features_df['source'] = class_type
-output_file = os.path.join(output_path, f'tsfel_features_{class_type}_P_{start_time}_{end_time}_F_{int(low)}_{int(high)}_{new_sr}_part_{part}.csv')
+
+if low == 1.0:
+    output_file = os.path.join(output_path, f'tsfel_features_{class_type}_P_{start_time}_{end_time}_F_{str(int(low)).replace(".","")}_{int(high)}_{new_sr}_part_{part}.csv')
+
+else:
+    output_file = os.path.join(output_path, f'tsfel_features_{class_type}_P_{start_time}_{end_time}_F_{str(low).replace(".","")}_{int(high)}_{new_sr}_part_{part}.csv')
+    
+    
 features_df.to_csv(output_file, index=False)
 
 print(f"Features for {class_type} saved to {output_file}")
