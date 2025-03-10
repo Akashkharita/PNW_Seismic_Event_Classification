@@ -15,14 +15,6 @@ The primary objective is to **evaluate and compare various ML and DL approaches*
 
 ![ML vs DL](Figures/ML_vs_DL.png)  
 
-
-## Contents
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-
 ---
 
 ## **🚀 Installation**  
