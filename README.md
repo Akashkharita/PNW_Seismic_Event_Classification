@@ -59,10 +59,13 @@ python -m ipykernel install --user --name=surface
 - **Cloud**
   ```
   bash
-  jupyter notebook --ip 0.0.0.0 --allow-root  
-```
+  jupyter notebook --ip 0.0.0.0 --allow-root
+
+  ```
+  
 
 - **Local**
+  
   ```
   bash
   jupyter notebook
