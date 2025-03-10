@@ -88,7 +88,7 @@ Feature extraction is a critical step in ML-based seismic classification. This r
 Scripts for extracting different types of features:
 
 - Physical Features:
-[Feature extraction](feature_extraction_scripts/physical_feature_extraction_scripts/physical_feature_extraction_combined_script.py) 
+[Feature extraction](feature_extraction_scripts/physical_feature_extraction_scripts/physical_feature_extraction_combined_script.py) and
 [Feature calculation script](feature_extraction_scripts/physical_feature_extraction_scripts/seis_feature.py)
 
 - TSFEL Features:
