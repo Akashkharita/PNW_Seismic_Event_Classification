@@ -88,6 +88,7 @@ Classic machine learning involves the intermediate step of feature extraction. T
 
 
 **Deep Learning**
+---
 Deep learning involves automatic feature extraction which are harder to interpret but are also faster. 
 - This [script](https://github.com/Akashkharita/PNW_Seismic_Event_Classification/blob/main/deep_learning/scripts/neural_network_architectures.py) contains all the neural network architectures
 - This [notebook](deep_learning/testing_deep_learning_architectures.ipynb) contains training and validation process of all the architectures.
