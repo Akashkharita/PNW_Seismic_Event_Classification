@@ -87,7 +87,11 @@ Classic machine learning involves the intermediate step of feature extraction. T
  - The [notebook](notebooks/ML_Classification_Workflow_for_Scoped.ipynb) shows an example of how to process, train and tune the machine learning model and evaluate the results. I also show the importance of including manual parameters in improving the classification performance, in addition to this, I show that this process can also be used to identify potentially mislabeled events. 
 
 
-
+**Deep Learning**
+Deep learning involves automatic feature extraction which are harder to interpret but are also faster. 
+- This [script](https://github.com/Akashkharita/PNW_Seismic_Event_Classification/blob/main/deep_learning/scripts/neural_network_architectures.py) contains all the neural network architectures
+- This [notebook](deep_learning/testing_deep_learning_architectures.ipynb) contains training and validation process of all the architectures.
+- This [notebook](deep_learning/testing_on_a_common_test_dataset.ipynb) contains the testing of all the neural network architectures on the common test dataset. 
 
 ## Contributing
 Anyone is welcome to contribute to improve the codes and visualization of the results. I am available at my email  - ak287@uw.edu for further collaboration. 
