@@ -11,7 +11,7 @@ Created by @Akash Kharita (PhD Candidate, University of Washington)
 This repository demonstrates the steps towards automated seismic event classification in the Pacific Northwest. We train several supervised machine learning and deep learning models on the dataset acquired in the pacific northwest. This dataset has four classes - (i) Earthquakes, (ii) Explosions, (iii) Noise and (iv) Surface Events. The geographical distribution of these events are shown in the figure below. ![Seismic events in the Pacific Northwest](Figures/Figure_1.png). The catalog spans over 20 years from 2001 to 2023 and contains over 200k events majority of which are earthquakes, followed by explosions, followed by noise and surface events. For more information about this catalog check out - [Ni et al. 2023](https://seismica.library.mcgill.ca/article/view/368/868)
 
 
-The main objective of this research is to test and compare variety of Machine Learning algorithms and feature sets and Deep Learning algorithms on this wide variety of the data to figure out what works best keeping in the broad goal of classifying and detecting surface events as accurately as possible, the difference between the ML and DL algorithms are illustrated in the following [figure](Figures/ML_vs_DL.png). 
+The main objective of this research is to test and compare variety of Machine Learning algorithms and feature sets and Deep Learning algorithms on this wide variety of the data to figure out what works best keeping in the broad goal of classifying and detecting surface events as accurately as possible, the difference between the ML and DL algorithms are illustrated in the following ![figure](Figures/ML_vs_DL.png). 
 
 
 
