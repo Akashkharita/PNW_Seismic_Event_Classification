@@ -1,10 +1,3 @@
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-
-
 # **Seismic Event Classification in the Pacific Northwest**  
 
 📌 **Created by**: @Akash Kharita (PhD Candidate, University of Washington)  
@@ -21,6 +14,14 @@ More information about these events can be found in this [paper](https://seismic
 The primary objective is to **evaluate and compare various ML and DL approaches** to improve surface event classification while balancing accuracy, interpretability, and efficiency. The key differences between ML and DL techniques are illustrated below:  
 
 ![ML vs DL](Figures/ML_vs_DL.png)  
+
+
+## Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
 
 ---
 
