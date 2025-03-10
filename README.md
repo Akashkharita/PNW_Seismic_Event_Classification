@@ -16,8 +16,7 @@ This repository provides a framework for **automated seismic event classificatio
 3. **Noise**  
 4. **Surface Events**  
 
-### **📍 Geographical Distribution**  
-![Seismic events in the Pacific Northwest](Figures/Figure_1.png)  
+More information about these events can be found in this [paper](https://seismica.library.mcgill.ca/article/view/368)
 
 The primary objective is to **evaluate and compare various ML and DL approaches** to improve surface event classification while balancing accuracy, interpretability, and efficiency. The key differences between ML and DL techniques are illustrated below:  
 
