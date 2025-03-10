@@ -4,41 +4,69 @@
 - [License](#license)
 
 
-# Seismic Event Classification in Pacific Northwest
 
-Created by @Akash Kharita (PhD Candidate, University of Washington)
+# **Seismic Event Classification in the Pacific Northwest**  
 
-This repository demonstrates the steps towards automated seismic event classification in the Pacific Northwest. We train several supervised machine learning and deep learning models on the dataset acquired in the pacific northwest. This dataset has four classes - (i) Earthquakes, (ii) Explosions, (iii) Noise and (iv) Surface Events. The geographical distribution of these events are shown in the figure below. ![Seismic events in the Pacific Northwest](Figures/Figure_1.png). The catalog spans over 20 years from 2001 to 2023 and contains over 200k events majority of which are earthquakes, followed by explosions, followed by noise and surface events. For more information about this catalog check out - [Ni et al. 2023](https://seismica.library.mcgill.ca/article/view/368/868)
+📌 **Created by**: @Akash Kharita (PhD Candidate, University of Washington)  
 
+This repository provides a framework for **automated seismic event classification** in the Pacific Northwest. We train multiple **machine learning (ML) and deep learning (DL) models** on a dataset spanning **2001–2023**, containing **200K+ events** across four classes:  
 
-The main objective of this research is to test and compare variety of Machine Learning algorithms and feature sets and Deep Learning algorithms on this wide variety of the data to figure out what works best keeping in the broad goal of classifying and detecting surface events as accurately as possible, the difference between the ML and DL algorithms are illustrated in the following ![figure](Figures/ML_vs_DL.png). 
+1. **Earthquakes**  
+2. **Explosions**  
+3. **Noise**  
+4. **Surface Events**  
 
+### **📍 Geographical Distribution**  
+![Seismic events in the Pacific Northwest](Figures/Figure_1.png)  
 
+The primary objective is to **evaluate and compare various ML and DL approaches** to improve surface event classification while balancing accuracy, interpretability, and efficiency. The key differences between ML and DL techniques are illustrated below:  
 
-## Installation
+![ML vs DL](Figures/ML_vs_DL.png)  
 
-Instructions on how to install...
+---
 
-If we are running this on the cloud we will look at the instructions in this book to understand how to run this notebook on a cloud - [HPSBook](https://seisscoped.org/HPS-book/chapters/cloud/AWS_101.html).
+## **🚀 Installation**  
 
-Once we are in a instance we will run this code - 
+For cloud-based execution, refer to [HPSBook](https://seisscoped.org/HPS-book/chapters/cloud/AWS_101.html).  
 
-```
-sudo yum install -y git
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-chmod +x Miniconda3-latest-Linux-x86_64.sh 
-./Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda
-./miniconda/bin/conda init bash
-bash
-```
-
-And then we are going to run - 
-```
+### **1️⃣ Set up environment**  
+```bash
+sudo yum install -y git  
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh  
+chmod +x Miniconda3-latest-Linux-x86_64.sh  
+./Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda  
+./miniconda/bin/conda init bash  
+bash  
 sudo yum groupinstall -y "Development Tools"
 ```
 
 
-Following instructions can be followed on your local system as well as on the cloud (after following the instructions above)
+### **2️⃣ Clone the repository & install dependencies** 
+
+```
+git clone https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git  
+cd PNW_Seismic_Event_Classification  
+conda create -y -n surface python=3.9.5  
+conda activate surface  
+pip install -r requirements.txt  
+pip install jupyter  
+conda install -y ipykernel  
+python -m ipykernel install --user --name=surface  
+```
+
+### **3️⃣ Launch Jupyter Notebook**
+
+- **Cloud**
+  ```
+  bash
+  jupyter notebook --ip 0.0.0.0 --allow-root  
+```
+
+- **Local**
+  ```
+  bash
+  jupyter notebook
+  ```
 
 
 Then we will clone the github repository and  install the required dependencies
@@ -97,6 +125,7 @@ Deep learning involves automatic feature extraction which are harder to interpre
 - This [script](https://github.com/Akashkharita/PNW_Seismic_Event_Classification/blob/main/deep_learning/scripts/neural_network_architectures.py) contains all the neural network architectures
 - This [notebook](deep_learning/testing_deep_learning_architectures.ipynb) contains training and validation process of all the architectures.
 - This [notebook](deep_learning/testing_on_a_common_test_dataset.ipynb) contains the testing of all the neural network architectures on the common test dataset. 
+
 
 
 ## Contributing
