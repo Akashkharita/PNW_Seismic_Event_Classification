@@ -101,9 +101,9 @@ Scripts for extracting different types of features:
 ### 📌 Deep Learning
 Deep learning models enable automatic feature extraction:
 
-Neural Network Architectures: [Script](https://github.com/Akashkharita/PNW_Seismic_Event_Classification/blob/main/deep_learning/scripts/neural_network_architectures.py)
-Training & Validation: [Notebook](deep_learning/testing_deep_learning_architectures.ipynb)
-Testing on Common Dataset: [Notebook](deep_learning/testing_on_a_common_test_dataset.ipynb) 
+- Neural Network Architectures: [Script](https://github.com/Akashkharita/PNW_Seismic_Event_Classification/blob/main/deep_learning/scripts/neural_network_architectures.py)
+- Training & Validation: [Notebook](deep_learning/testing_deep_learning_architectures.ipynb)
+- Testing on Common Dataset: [Notebook](deep_learning/testing_on_a_common_test_dataset.ipynb) 
 
 
 
