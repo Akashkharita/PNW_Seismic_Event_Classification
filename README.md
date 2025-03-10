@@ -2,6 +2,9 @@
 
 📌 **Created by**: @Akash Kharita (PhD Candidate, University of Washington)  
 
+
+[![DOI](https://zenodo.org/badge/791010314.svg)](https://doi.org/10.5281/zenodo.14963739)
+
 This repository provides a framework for **automated seismic event classification** in the Pacific Northwest. We train multiple **machine learning (ML) and deep learning (DL) models** on a dataset spanning **2001–2023**, containing **200K+ events** across four classes:  
 
 1. **Earthquakes**  
