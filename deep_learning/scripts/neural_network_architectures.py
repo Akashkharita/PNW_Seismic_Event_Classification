@@ -60,9 +60,9 @@ criterion=nn.CrossEntropyLoss()
 
 
 
-class MyCNN_1d(nn.Module):
+class QuakeXNet_1d(nn.Module):
     def __init__(self, num_classes=4, num_channels=3, dropout_rate=0.2):
-        super(MyCNN_1d, self).__init__()
+        super(QuakeXNet_1d, self).__init__()
         # Define the layers of the CNN architecture
         self.conv1 = nn.Conv1d(in_channels=num_channels, out_channels=8, kernel_size=9, stride=1, padding=4)
         self.conv2 = nn.Conv1d(in_channels=8, out_channels=8, kernel_size=9, stride=2, padding=4)
@@ -124,9 +124,9 @@ class MyCNN_1d(nn.Module):
         return x
 
     
-class MyCNN_2d(nn.Module):
+class QuakeXNet_2d(nn.Module):
     def __init__(self, num_classes=4, num_channels=3, dropout_rate=0.2):
-        super(MyCNN_2d, self).__init__()
+        super(QuakeXNet_2d, self).__init__()
         
         # Define the layers of the CNN architecture
         self.conv1 = nn.Conv2d(in_channels=num_channels, out_channels=8, kernel_size=(3, 3), stride=1, padding=1)
@@ -197,9 +197,9 @@ class MyCNN_2d(nn.Module):
 
     
 
-class MyCNN_1d_on_2d(nn.Module):
+class QuakeXNet_1d_on_2d(nn.Module):
     def __init__(self, num_classes=4, num_channels=3, dropout_rate=0.2):
-        super(MyCNN_1d_on_2d, self).__init__()
+        super(QuakeXNet_1d_on_2d, self).__init__()
         
         # Define the layers of the CNN architecture
         self.conv1 = nn.Conv1d(in_channels=num_channels, out_channels=8, kernel_size=3, stride=1, padding=1)
@@ -357,31 +357,6 @@ class SeismicCNN_2d(nn.Module):
 
 
 
-
-
-
-class BasicResNetBlock(nn.Module):
-    def __init__(self, in_channels):
-        super(BasicResNetBlock, self).__init__()
-        self.conv1 = nn.Conv1d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm1d(in_channels)
-        self.conv2 = nn.Conv1d(in_channels, in_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm1d(in_channels)
-        
-    def forward(self, x):
-        identity = x
-        
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = F.relu(out)
-        
-        out = self.conv2(out)
-        out = self.bn2(out)
-        
-        out += identity
-        out = F.relu(out)
-        
-        return out
     
     
 class BasicResNetBlock(nn.Module):
@@ -409,9 +384,9 @@ class BasicResNetBlock(nn.Module):
     
     
 
-class MyResCNN_1d(nn.Module):
+class BasicResNet_1d(nn.Module):
     def __init__(self, num_classes, num_channels=3,dropout_rate=0.2):
-        super(MyResCNN_1d, self).__init__()
+        super(BasicResNet_1d, self).__init__()
         self.conv1 = nn.Conv1d(num_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm1d(64)
         self.relu = nn.ReLU(inplace=True)
@@ -469,9 +444,9 @@ class BasicResNetBlock2D(nn.Module):
         
         return out
 
-class MyResCNN_2d(nn.Module):
+class BasicResNet_2d(nn.Module):
     def __init__(self, num_classes, num_channels=1, dropout_rate=0.2):
-        super(MyResCNN_2d, self).__init__()
+        super(BasicResNet_2d, self).__init__()
         self.conv1 = nn.Conv2d(num_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
