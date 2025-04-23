@@ -5,7 +5,7 @@ import h5py
 import obspy
 # from tqdm import tqdm
 from glob import glob
-# import time
+import time
 import random
 import sys
 from datetime import datetime
@@ -37,6 +37,9 @@ print(device)
 
 criterion=nn.CrossEntropyLoss()
 batch_size = 128
+
+
+
 def plot_confusion_matrix_and_cr(model, test_loader, show_plot = True, criterion = criterion, batch_size = batch_size):
     
     """
@@ -92,7 +95,7 @@ def plot_confusion_matrix_and_cr(model, test_loader, show_plot = True, criterion
         from sklearn.metrics import confusion_matrix
         import seaborn as sns
 
-        plt.style.use('seaborn')
+        #plt.style.use('seaborn')
 
         with torch.no_grad(): # Context-manager that disabled gradient calculation.
             # Loop on samples in test set
@@ -160,6 +163,8 @@ test_split = 0
 batch_size = 0
 
 
+
+
 def return_train_test_val_loaders(X = X,y = y, num_classes = 4, train_split = train_split, 
                                   val_split = val_split, test_split = test_split, batch_size = batch_size):   
         
@@ -184,6 +189,30 @@ def return_train_test_val_loaders(X = X,y = y, num_classes = 4, train_split = tr
         
         
         return train_loader, val_loader, test_loader
+    
+ 
+
+def return_train_val_loaders(X = X,y = y, num_classes = 4, train_split = train_split, 
+                                  val_split = val_split, test_split = test_split, batch_size = batch_size):   
+        
+        # Make the data a PNWDataSet
+        custom_dataset = PNWDataSet(X,y,num_classes)
+
+        # first split train+val
+        # Determine the size of the training set
+        train_size = int(train_split/100 * len(custom_dataset)) # 70% of the data set
+        val_size = int(val_split/100 * len(custom_dataset)) # 20% of the data set
+        
+        
+        train_dataset, val_dataset = random_split(custom_dataset, [train_size, val_size])
+        # then split val into val+test
+
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,drop_last=True)
+        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True,drop_last=True)
+
+        print(len(train_loader),len(val_loader))
+        
+        return train_loader, val_loader
     
     
     
@@ -221,7 +250,7 @@ def extract_waveforms(cat, file_name, start=-20, input_window_length=100, fs=50,
     # open the file
     f = h5py.File(file_name, 'r')
     x=np.zeros(shape=(number_data, 3, int(fs*input_window_length)))
-    event_ids = cat['event_id'].values
+    event_ids = cat['event_id'].values+'_'+cat['station_network_code'].values+'.'+cat['station_code'].values
     if not all_data:event_ids=event_ids[:number_data]
         
     for index in tqdm(range(number_data)):
@@ -240,9 +269,7 @@ def extract_waveforms(cat, file_name, start=-20, input_window_length=100, fs=50,
         
         data = f['/data/%s' % bucket][xx, :, : ] # get all of the three component data,
         
-        
-        
-  
+     
         nyquist = 0.5 * cat.loc[index,'trace_sampling_rate_hz']
         low = lowcut / nyquist;  high = highcut / nyquist
         b, a = signal.butter(4, [low, high], btype='band')
@@ -257,12 +284,12 @@ def extract_waveforms(cat, file_name, start=-20, input_window_length=100, fs=50,
         data = np.array([signal.resample(row, number_of_samples) for row in filtered_signal])
 
             
-        if event_ids[index].split("_")[-1]!="noise":
+        if event_ids[index].split("_")[1]!="noise":
             #random start between P-20 and P-5 (upper bound is exclusive in numpy.random.randint)        
             ii = int(np.random.randint(start,-4)*fs)
             
             
-            ## in the following code, if the condition is true, it will skip to next index and wont execute any code.          
+            ## in the following code, if the condition is true, it will skip to next index and wont execute any code. (this is important for surface events)         
             if np.isnan(cat.loc[index, 'trace_P_arrival_sample']):continue
             
             
@@ -327,7 +354,7 @@ def extract_spectrograms(waveforms = a, fs = fs, nperseg=256, overlap=0.5):
 
 
 
-def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
+def train_model(model, train_loader, val_loader,  n_epochs=100,
                  learning_rate=0.001,criterion=nn.CrossEntropyLoss(),
                  augmentation=False,patience=10, model_path = 'trained_models/best_model_'):
     """
@@ -362,13 +389,16 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
     best_val_loss = float('inf')
     total = 0   # to store the total number of samples
     correct = 0 # to store the number of correct predictions
-
+    
+    model_training_time = 0
     for epoch in tqdm(range(n_epochs)):
         running_loss = 0
         
         
         # putting the model in training mode
         model.train()
+        
+        initial_time = time.time()
         for data in train_loader:
             inputs, labels = data[0].to(device), data[1].to(device)
             inputs = inputs.float()
@@ -413,6 +443,9 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
             optimizer.step()
 
             running_loss += loss.item()
+        final_time = time.time() - initial_time
+        model_training_time += final_time
+        
 
         # updating the training loss list
         loss_time[epoch] = running_loss/len(train_loader)
@@ -470,6 +503,8 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
     model.load_state_dict(torch.load(model_path+model_name+'.pth'))
     # testing
         # We evaluate the model, so we do not need the gradient
+        
+    """
     model.eval() 
     with torch.no_grad(): # Context-manager that disabled gradient calculation.
         # Loop on samples in test set
@@ -491,9 +526,11 @@ def train_model(model, train_loader, val_loader, test_loader, n_epochs=100,
         test_loss = running_test_loss/len(test_loader)
         test_accuracy = 100 * correct / total  
         print('test loss: %.3f and accuracy: %.3f' % ( test_loss,test_accuracy))
+      
+     """
 
    
-    return loss_time, val_loss_time, val_accuracy_time, test_loss,test_accuracy
+    return loss_time, val_loss_time, val_accuracy_time, model_training_time
 
 
 
