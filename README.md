@@ -1,13 +1,9 @@
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-
-
 # **Seismic Event Classification in the Pacific Northwest**  
 
 📌 **Created by**: @Akash Kharita (PhD Candidate, University of Washington)  
+
+
+[![DOI](https://zenodo.org/badge/791010314.svg)](https://doi.org/10.5281/zenodo.14963739)
 
 This repository provides a framework for **automated seismic event classification** in the Pacific Northwest. We train multiple **machine learning (ML) and deep learning (DL) models** on a dataset spanning **2001–2023**, containing **200K+ events** across four classes:  
 
@@ -16,8 +12,7 @@ This repository provides a framework for **automated seismic event classificatio
 3. **Noise**  
 4. **Surface Events**  
 
-### **📍 Geographical Distribution**  
-![Seismic events in the Pacific Northwest](Figures/Figure_1.png)  
+More information about these events can be found in this [paper](https://seismica.library.mcgill.ca/article/view/368)
 
 The primary objective is to **evaluate and compare various ML and DL approaches** to improve surface event classification while balancing accuracy, interpretability, and efficiency. The key differences between ML and DL techniques are illustrated below:  
 
@@ -88,7 +83,7 @@ Feature extraction is a critical step in ML-based seismic classification. This r
 Scripts for extracting different types of features:
 
 - Physical Features:
-[Feature extraction](feature_extraction_scripts/physical_feature_extraction_scripts/physical_feature_extraction_combined_script.py) 
+[Feature extraction](feature_extraction_scripts/physical_feature_extraction_scripts/physical_feature_extraction_combined_script.py) and
 [Feature calculation script](feature_extraction_scripts/physical_feature_extraction_scripts/seis_feature.py)
 
 - TSFEL Features:
