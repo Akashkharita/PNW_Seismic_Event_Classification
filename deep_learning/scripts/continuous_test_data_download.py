@@ -16,7 +16,6 @@ client = Client('IRIS')
 
 # List of specific stations
 stations = [
-    {"network": "UW", "station": "RCS", "channel": "EH?"},
     {"network": "UW", "station": "RER",  "channel": "HH?"},
     {"network": "UW", "station": "STAR",  "channel": "EH?"},
     {"network": "CC", "station": "PANH",  "channel": "BH?"},
