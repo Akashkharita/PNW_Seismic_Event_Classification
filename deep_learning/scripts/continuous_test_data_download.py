@@ -28,6 +28,8 @@ sys.path.append('/home/ak287/seisbench/seisbench/models')
 import seisbench.models as sbm
 
 
+client = Client('IRIS')
+
 #model1 = sbm.QuakeXNetoneD.from_pretrained("base")
 model2 = sbm.SeismicCNN.from_pretrained("base")
 
