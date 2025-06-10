@@ -36,15 +36,7 @@ model2 = sbm.SeismicCNN.from_pretrained("base")
 
 
 
-# ────────────────────────── user config ──────────────────────────
-START = UTCDateTime(2023, 6, 1)          # beginning of month (UTC)
-END   = START + 60*24*3600           # ~30 days later
-WINDOW_SEC   = 100                       # classifier input window
-STRIDE_SEC = 50           # step between slice starts  ← NEW
-CHUNK_SEC    = 3600                      # download one hour at a time
-CLIENT       = Client("IRIS")            # or regional FDSN node
-OUT_DIR      = "../dl_probs_csv"            # output folder
-os.makedirs(OUT_DIR, exist_ok=True)
+starttime = UTCDateTime(2023, 6, 1, 0, 0, 0)
 
 stations = [
     {"network": "UW", "station": "RER",  "channel": "HH?"},
@@ -54,100 +46,39 @@ stations = [
     {"network": "CC", "station": "MILD", "channel": "BH?"},
 ]
 
-# import or create your classifier here
-# from my_models import model2
-# model2.eval()
-# ──────────────────────────────────────────────────────────────────
+window_sec = 100
+stride_sec = 50
+duration_sec =  24*3600*60 # One full day (86400 seconds)
+num_windows = duration_sec // stride_sec
 
-
-def classify_window(win_st: Stream):
-    """
-    Returns dict of class:prob for one 100-s 3-component Stream.
-    """
-    out_st = model2.annotate(win_st)
-    # Expect 4 traces in the output stream (eq, px, no, su)
-    return {tr.stats.channel.split("_")[-1]: float(tr.data[0]) for tr in out_st}
-
-
-def slice_hour_to_windows(hour_st: Stream, chunk_start: UTCDateTime):
-    """
-    Yield (win_start, win_stream) for consecutive 100-s windows with 50-s stride
-    **inside the current 1-hour chunk**.
-
-    We skip any window whose *end* would spill past the chunk boundary.
-    The first window of the *next* chunk will cover that spill-over area,
-    so we avoid duplicate work.
-    """
-    sr         = 50.0  # Hz  (adjust if model trained on a different rate)
-    n_samples  = int(sr * WINDOW_SEC)
-    last_start = CHUNK_SEC - WINDOW_SEC  # 3600-100 = 3500 s
-
-    for offset in range(0, last_start + 1, STRIDE_SEC):
-        win_start = chunk_start + offset
-        win_end   = win_start   + WINDOW_SEC
-
-        # Pull a copy, pad with zeros if a tiny gap exists
-        win = hour_st.copy().trim(win_start, win_end,
-                                  pad=True, fill_value=0, nearest_sample=False)
-
-        # Require exactly one Z, one N, one E trace and right sample count
-        if len(win) >= 3 and all(len(tr) == n_samples for tr in win):
-            yield win_start, win
-
-
-
-def process_station(sta):
-    """
-    Stream-through-time loop for one station. Writes a CSV incrementally.
-    """
-    out_path = os.path.join(OUT_DIR,
-                  f"{sta['network']}_{sta['station']}_{START.date}.csv")
-    header = ["utc_start", "eq_prob", "px_prob", "no_prob", "su_prob"]
-
-    with open(out_path, "w", newline="") as f:
+for sta in stations:
+    output_path = f"../dl_probs_csv/{sta['network']}_{sta['station']}_{starttime.date}.csv"
+    
+    with open(output_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(header)
+        writer.writerow(["utc_start", "eq_prob", "px_prob", "no_prob", "su_prob"])  # header
 
-        t = START
-        total_hours = math.ceil((END - START) / CHUNK_SEC)
-        with tqdm(total=total_hours,
-                  desc=f"{sta['network']}.{sta['station']}",
-                  unit="h") as pbar:
-            while t < END:
+        i = 0
+        with tqdm(total=num_windows, desc=f"{sta['network']}.{sta['station']}", unit="win") as pbar:
+            while i + window_sec <= duration_sec:
                 try:
-                    hour_st = CLIENT.get_waveforms(
-                        network   = sta["network"],
-                        station   = sta["station"],
-                        location  = "*",
-                        channel   = sta["channel"],
-                        starttime = t,
-                        endtime   = t + CHUNK_SEC,
-                        attach_response=False,
+                    stream = client.get_waveforms(
+                        network=sta["network"],
+                        station=sta["station"],
+                        channel=sta["channel"],
+                        location="*",
+                        starttime=starttime + i,
+                        endtime=starttime + i + window_sec
                     )
-                    # OPTIONAL: pre-processing here (detrend, filter, …)
 
-                    for win_start, win in slice_hour_to_windows(hour_st, t):
-                        probs = classify_window(win)
-                        writer.writerow([
-                            win_start.isoformat(),
-                            probs.get("eq", 0.0),
-                            probs.get("px", 0.0),
-                            probs.get("no", 0.0),
-                            probs.get("su", 0.0)
-                        ])
+                    probs = model2.annotate(stream)
+                    row = [str(starttime + i)] + [float(tr.data[0]) for tr in probs]
+                    writer.writerow(row)
 
                 except Exception as e:
-                    # network hiccup or no data; skip hour
-                    print(e)
-                    pass
+                    tqdm.write(f"[{sta['station']}] Error at {starttime+i}: {e}")
 
-                t += CHUNK_SEC
+                i += stride_sec
                 pbar.update(1)
 
-
-# ───────────────────────────── main ──────────────────────────────
-if __name__ == "__main__":
-    for sta in stations:
-        process_station(sta)
-
-    print(f"\nFinished – CSVs saved in “{OUT_DIR}”.")
+print("\n✅ Finished processing all stations.")
