@@ -28,14 +28,14 @@ for i in tqdm(range(len(df_exp))):
     
     try:
 
-        origin_time = starttimes[i]
+        origin_time = obspy.UTCDateTime(starttimes[i])
 
         # Circular domain around the epicenter. This will download all data between
         # 70 and 90 degrees distance from the epicenter. This module also offers
         # rectangular and global domains. More complex domains can be defined by
         # inheriting from the Domain class.
         domain = CircularDomain(latitude=ev_lats[i], longitude=ev_lons[i],
-                                minradius=0, maxradius=1.5)
+                                minradius=0, maxradius=0.5)
 
         restrictions = Restrictions(
             # Get data from 5 minutes before the event to one hour after the
@@ -63,7 +63,7 @@ for i in tqdm(range(len(df_exp))):
             location_priorities=["", "00", "10"])
 
         # No specified providers will result in all known ones being queried.
-        mdl = MassDownloader()
+        mdl = MassDownloader(providers = ['IRIS'])
         # The data will be downloaded to the ``./waveforms/`` and ``./stations/``
         # folders with automatically chosen file names.
         mdl.download(domain, restrictions, mseed_storage="../data/pnw_new_explosion_2023_2025/waveforms/"+str(ev_id[i]),
