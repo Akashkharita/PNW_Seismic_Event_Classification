@@ -1,0 +1,337 @@
+[
+  {
+    "net": "AM",
+    "sta": "R6DB9",
+    "chn": "EH"
+  },
+  {
+    "net": "C0",
+    "sta": "PALI",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "ARAT",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "CARB",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "COPP",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "CRBN",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "CRYS",
+    "chn": "HH"
+  },
+  {
+    "net": "CC",
+    "sta": "GNOB",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "GRWR",
+    "chn": "HH"
+  },
+  {
+    "net": "CC",
+    "sta": "GTWY",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "KAUT",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "KAVK",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "LONR",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "MILD",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "OBSR",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "OPCH",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PALI",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PANH",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PARA",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PR01",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PR02",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PR03",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PR04",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "PR05",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "RUSH",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "SIFT",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "STYX",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "SUNT",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "SUNT",
+    "chn": "HH"
+  },
+  {
+    "net": "CC",
+    "sta": "TABR",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "TAVI",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "VOIT",
+    "chn": "BH"
+  },
+  {
+    "net": "CC",
+    "sta": "WOW",
+    "chn": "BH"
+  },
+  {
+    "net": "GS",
+    "sta": "EVER7",
+    "chn": "HH"
+  },
+  {
+    "net": "GS",
+    "sta": "EVER8",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "BHW",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "COWS",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "DART",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "DREAM",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "ELL",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "FMW",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "GPW",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "GSM",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "HOPR",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "HTW",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "JCW",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "LO2",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "LOKMT",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "LON",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "LTY",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "MANO",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "MBW2",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "MULN",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "NAC2",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "PASS",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "RATT",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "RCM",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "RCS",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "RER",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "RPW2",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "SHUK",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "SLF",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "STAR",
+    "chn": "EH"
+  },
+  {
+    "net": "UW",
+    "sta": "STOR",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "TBLMT",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "TOLT",
+    "chn": "HH"
+  },
+  {
+    "net": "UW",
+    "sta": "WRW",
+    "chn": "HH"
+  }
+]
