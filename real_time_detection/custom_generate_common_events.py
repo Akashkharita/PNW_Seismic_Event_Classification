@@ -3,7 +3,7 @@ import obspy
 import matplotlib.pyplot as plt
 import re
 import pandas as pd
-import glob
+from glob import glob
 import argparse
 from datetime import datetime
 
@@ -22,25 +22,15 @@ user_end   = datetime.strptime(args.end,   "%Y-%m-%dT%H:%M:%S")
 
 
 # -------------------- Find matching CSVs --------------------
-all_files = glob.glob("logs/*_to_*_events.csv")
-matched_files = []
+#all_files = glob.glob("logs/*_to_*_events.csv")
 
-pattern = re.compile(r".*_(\d{8}_\d{4})_to_(\d{8}_\d{4})_events\.csv$")
 
 file_start = user_start.strftime("%Y%m%d_%H%M")
 file_end = user_end.strftime("%Y%m%d_%H%M")
 
-print(file_start)
-print(file_end)
 
-for f in all_files:
-    m = pattern.match(f)
-    if m:
-        file_start = datetime.strptime(m.group(1), "%Y%m%d_%H%M")
-        file_end   = datetime.strptime(m.group(2), "%Y%m%d_%H%M")
-        # Keep files overlapping user range
-        if file_end == user_start and file_start == user_end:
-            matched_files.append(f)
+
+matched_files = glob(f'logs/*{file_start}*{file_end}*')
 
 if not matched_files:
     raise FileNotFoundError("No event files found overlapping the requested time range")
