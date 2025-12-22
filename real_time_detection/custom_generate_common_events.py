@@ -35,7 +35,7 @@ matched_files = glob(f'logs/*{file_start}*{file_end}*')
 if not matched_files:
     raise FileNotFoundError("No event files found overlapping the requested time range")
 
-print(matched_files)
+
 print(f"Found {len(matched_files)} event files")
 
 
